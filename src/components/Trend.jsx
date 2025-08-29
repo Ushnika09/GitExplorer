@@ -1,11 +1,18 @@
-import React, { useState } from 'react'
+import React, { useContext, useState } from 'react'
+import DataProvider, { DataContext } from '../Context/DataContext';
+import RepoCard from './RepoCard';
+import { AiOutlineLoading3Quarters } from "react-icons/ai";
 
 function Trend() {
     const [active,setActive]=useState("today")
     const [activeLang,setActiveLang]=useState("All languages")
     const Languages = ["All languages","JavaScript","Python","Java","TypeScript","C#","C++","PHP","C","React","Ruby"];
+
+    const {data,val,setVal,loading}=useContext(DataContext)
+    console.log(data,"trend");
   return (
-    <div className='flex-col flex items-start gap-3.5 justify-center  rounded-xl bg-white shadow px-5 py-5 transition-all duration-300 border-8 border-purple-200 '>
+    <div className='flex-col flex gap-10'>
+        <div className='flex-col flex items-start gap-3.5 justify-center  rounded-xl bg-white shadow px-5 py-5 transition-all duration-300 '>
         <h1 className='text-2xl font-bold'>Trending Repositories</h1>
         <h1 className='text-gray-700 font-bold '>Time Range</h1>
         <div className='flex gap-5 flex-row font-semibold pb-2'>
@@ -29,9 +36,23 @@ function Trend() {
                 })
             }
         </div>
+    </div>
+    {
+        data.length==0 ? 
+        (<div className=' flex items-center h-[10rem] gap-3.5 justify-center  rounded-xl bg-white shadow px-5 py-5 transition-all duration-300  '>
+            <AiOutlineLoading3Quarters className="animate-spin text-3xl text-purple-500" />
+            <h1 className="text-3xl text-purple-500">Loading</h1>
+        </div>)
 
-
-
+        :(<>
+            <h1 className='text-2xl font-bold'>Trending 
+                <span className='px-0.5'>
+                ({data.length})</span>
+                </h1>
+            
+            <RepoCard data={data} val={val}/>
+        </>)
+    }
     </div>
   )
 }

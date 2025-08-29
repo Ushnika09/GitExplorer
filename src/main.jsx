@@ -3,10 +3,10 @@ import { createRoot } from "react-dom/client";
 import "./index.css";
 import App from "./App.jsx";
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
-import Search from "./Layout/Search.jsx";
 import Home from "./Layout/Home.jsx";
 import Analytics from "./Layout/Analytics.jsx";
 import Bookmarks from "./Layout/Bookmarks.jsx";
+import DataProvider from "./Context/DataContext.jsx";
 
 const appRoute = createBrowserRouter([
   {
@@ -18,15 +18,11 @@ const appRoute = createBrowserRouter([
         path: "/",
       },
       {
-        element: <Search />,
-        path: "/search",
-      },
-      {
-        element: <Analytics/>,
+        element: <Analytics />,
         path: "/analytics",
       },
       {
-        element: <Bookmarks/>,
+        element: <Bookmarks />,
         path: "/bookmarks",
       },
     ],
@@ -34,5 +30,7 @@ const appRoute = createBrowserRouter([
 ]);
 
 createRoot(document.getElementById("root")).render(
-  <RouterProvider router={appRoute} />
+  <DataProvider>
+    <RouterProvider router={appRoute} />
+  </DataProvider>
 );
