@@ -1,7 +1,7 @@
 import React, { useState, useRef, useEffect } from "react";
 import { RiArrowDropDownFill } from "react-icons/ri";
 
-function FiltersDropdown() {
+function FiltersDropdown({val,setval}) {
   const [open, setOpen] = useState(false);
   const [stars, setStars] = useState(5000); // ✅ default value = 5000
   const [dropUp, setDropUp] = useState(false);
@@ -59,7 +59,9 @@ function FiltersDropdown() {
             <label className="block text-sm font-semibold mb-1">Language</label>
             <select className="w-full px-3 py-2 border rounded-xl bg-neutral-100 focus:ring-2 focus:ring-purple-500">
               {Languages.map((lang, idx) => (
-                <option key={idx}>{lang}</option>
+                <option key={idx} >
+                  {lang}</option>
+                
               ))}
             </select>
           </div>

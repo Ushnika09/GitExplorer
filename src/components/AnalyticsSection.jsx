@@ -1,9 +1,15 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import RepoAnalytics from "./RepoAnalytics";
 import BookmarkAnalytics from "./BookmarkAnalytics";
+import Languageanaysis from "./Languageanaysis";
+import Top10 from "./Top10";
 
 function AnalyticsSection() {
   const [active, setActive] = useState("repo");
+
+
+  
+
   return (
     <div className="flex flex-col justify-center my-12 mb-22 gap-5">
         <div className="flex  gap-4 items-center ">
@@ -30,7 +36,13 @@ function AnalyticsSection() {
       </button>
     </div>
     {
-        (active=="repo" ? <RepoAnalytics/> : <BookmarkAnalytics/>)
+        (active=="repo" ? (<>
+        <RepoAnalytics/>
+          <Languageanaysis/>
+          <Top10/>
+        </>
+        )
+         : <BookmarkAnalytics/>)
     }
     </div>
   );

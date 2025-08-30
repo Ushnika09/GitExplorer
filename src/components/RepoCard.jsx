@@ -6,7 +6,7 @@ import { CiCalendar } from 'react-icons/ci';
 import moment from 'moment';
 import { IoEyeOutline } from "react-icons/io5";
 
-function RepoCard({ data }) {
+function RepoCard({ data }) {//here data is data.items
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
       {data.map((repo) => (
@@ -35,7 +35,7 @@ function RepoCard({ data }) {
             <h1 className="text-lg font-semibold truncate">{repo?.name}</h1>
             <p className="text-gray-700 text-sm line-clamp-2">{repo?.description}</p>
             {repo?.language && (
-              <span className="text-sm font-medium text-gray-500">{repo.language}</span>
+              <span className="text-sm font-bold text-gray-500">{repo.language}</span>
             )}
           </div>
 

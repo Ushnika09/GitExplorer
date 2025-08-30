@@ -1,10 +1,30 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { BiSearch } from 'react-icons/bi'
 import { RiArrowDropDownFill } from "react-icons/ri";
 import FiltersDropdown from './FiltersDropdown';
 import RepoAction from './RepoAction';
+import githubGet from "../../utils/Githubapi";
 
 function Repos() {
+
+  
+
+  useEffect(()=>{
+      const FetchSearchRepo = () => {
+        
+        githubGet(`/search/repositories`, {
+          q: `created:>${val.time}`,
+          sort: "stars",
+          order: "desc",
+        }).then((res) => {
+          
+          console.log(res?.items);
+          
+        });
+      };
+      FetchSearchRepo()
+  },[])
+
   const [query, setQuery] = useState("");
   const [sortBy, setSortBy] = useState("stars");
   const [order, setOrder] = useState("desc");
@@ -19,7 +39,7 @@ function Repos() {
   return (
     <div className='flex flex-col items-start gap-5 justify-center '>
       
-    <div className='w-full rounded-2xl bg-white shadow px-5 py-5 transition-all duration-300 border-8 border-purple-200 gap-5 flex flex-col items-start justify-center'>
+    <div className='w-full rounded-2xl bg-white shadow px-5 py-5 transition-all duration-300  gap-5 flex flex-col items-start justify-center'>
             {/* Title */}
       <h1 className='text-2xl font-bold text-gray-800'>Search Repositories</h1>
       
@@ -80,7 +100,7 @@ function Repos() {
         </div>
 
         {/* Filters */}
-        <FiltersDropdown/>
+        <FiltersDropdown val={val} setVal={setVal}/>
       </div>
     </div>
     <RepoAction/>
