@@ -1,38 +1,49 @@
-import axios from "axios";
-
-const GITHUB_TOKEN = process.env.GITHUB_TOKEN;
+// netlify/functions/github.js
 
 export async function handler(event) {
   try {
+    const GITHUB_TOKEN = process.env.GITHUB_TOKEN;
+    if (!GITHUB_TOKEN) {
+      throw new Error("Missing GITHUB_TOKEN environment variable");
+    }
+
     const endpoint = event.queryStringParameters.endpoint;
     if (!endpoint) throw new Error("Missing 'endpoint' query parameter");
 
+    // Copy all query params except 'endpoint'
     const params = { ...event.queryStringParameters };
     delete params.endpoint;
 
-    console.log("Params sent to GitHub:", params);
-
+    // Build query string
+    const queryString = new URLSearchParams(params).toString();
     const url = endpoint.startsWith("/")
-      ? `https://api.github.com${endpoint}`
-      : `https://api.github.com/${endpoint}`;
+      ? `https://api.github.com${endpoint}?${queryString}`
+      : `https://api.github.com/${endpoint}?${queryString}`;
 
-    const { data } = await axios.get(url, {
+    // Fetch from GitHub API
+    const res = await fetch(url, {
       headers: {
         Authorization: `Bearer ${GITHUB_TOKEN}`,
         Accept: "application/vnd.github.v3+json",
       },
-      params,
     });
+
+    if (!res.ok) {
+      const errorData = await res.json();
+      throw new Error(JSON.stringify(errorData));
+    }
+
+    const data = await res.json();
 
     return {
       statusCode: 200,
       body: JSON.stringify(data),
     };
   } catch (error) {
-    console.error("Function error:", error.response?.data || error.message);
+    console.error("Function error:", error.message);
     return {
-      statusCode: error.response?.status || 500,
-      body: JSON.stringify(error.response?.data || { message: error.message }),
+      statusCode: 500,
+      body: JSON.stringify({ message: error.message }),
     };
   }
 }
