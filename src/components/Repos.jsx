@@ -4,10 +4,11 @@ import { RiArrowDropDownFill } from "react-icons/ri";
 import FiltersDropdown from './FiltersDropdown';
 import RepoAction from './RepoAction';
 import githubGet from "../../utils/Githubapi";
+import { useData } from "../Context/DataContext";
 
 function Repos() {
 
-  
+  const {val,setVal} =useData()
 
   useEffect(()=>{
       const FetchSearchRepo = () => {

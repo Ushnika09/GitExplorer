@@ -7,7 +7,7 @@ function Filters({active}) {
     
 
   return (
-    <div className='my-7 mx-5 '> 
+    <div className='my-7 mx-auto '> 
     {
         (active=="trend") ? <Trend/> : (active=="repo") ? <Repos/> : <User/>
     }
