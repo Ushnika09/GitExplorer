@@ -3,6 +3,8 @@ import RepoAnalytics from "./RepoAnalytics";
 import BookmarkAnalytics from "./BookmarkAnalytics";
 import Languageanaysis from "./Languageanaysis";
 import Top10 from "./Top10";
+import LanguageDistribution from "./LanguageDistribution";
+import RecentBookmarks from "./RecentBookmarks";
 
 function AnalyticsSection() {
   const [active, setActive] = useState("repo");
@@ -42,7 +44,11 @@ function AnalyticsSection() {
           <Top10/>
         </>
         )
-         : <BookmarkAnalytics/>)
+         : <>
+         <BookmarkAnalytics/>
+         <LanguageDistribution/>
+         <RecentBookmarks/>
+         </>)
     }
     </div>
   );

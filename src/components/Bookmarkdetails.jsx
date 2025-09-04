@@ -1,8 +1,11 @@
 import React from 'react'
+import BookmarkAnalytics from './BookmarkAnalytics'
 
 function Bookmarkdetails() {
   return (
-    <div>Bookmarkdetails</div>
+    <div>
+      <BookmarkAnalytics/>
+    </div>
   )
 }
 

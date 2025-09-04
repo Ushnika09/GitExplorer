@@ -9,16 +9,13 @@ import moment from "moment";
 import { BookmarkContext } from "../Context/BookmarkProvider";
 
 export default function RepoCard({ data }) {
-  const { bookmarks, setBookmarks } = useContext(BookmarkContext)
+  const { bookmarks, setBookmarks } = useContext(BookmarkContext);
 
-  // Toggle bookmark
   function handleClick(repo) {
     const exists = bookmarks.find((b) => b.id === repo.id);
     if (exists) {
-      // Remove bookmark
       setBookmarks((prev) => prev.filter((b) => b.id !== repo.id));
     } else {
-      // Add bookmark
       setBookmarks((prev) => [
         ...prev,
         {
@@ -26,7 +23,11 @@ export default function RepoCard({ data }) {
           name: repo.name,
           owner: repo.owner.login,
           url: repo.html_url,
-          note: "",
+          language: repo.language || "Unknown",
+          stargazers_count: repo.stargazers_count || 0,
+          forks_count: repo.forks_count || 0,
+          watchers: repo.watchers || 0,
+          created_at: repo.created_at,
           avatar: repo.owner.avatar_url,
         },
       ]);
@@ -55,9 +56,7 @@ export default function RepoCard({ data }) {
                   alt={repo.owner.login}
                   className="rounded-full h-12 w-12"
                 />
-                <h1 className="text-sm md:text-lg font-medium">
-                  {repo.owner.login}
-                </h1>
+                <h1 className="text-sm md:text-lg font-medium">{repo.owner.login}</h1>
               </div>
 
               <div className="flex items-center gap-3 text-gray-600">
