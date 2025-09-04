@@ -1,12 +1,24 @@
 import React, { useState, useRef, useEffect } from "react";
 import { RiArrowDropDownFill } from "react-icons/ri";
 
-function FiltersDropdown({val,setval}) {
+function FiltersDropdown({ val, setVal }) {
   const [open, setOpen] = useState(false);
-  const [stars, setStars] = useState(5000); // ✅ default value = 5000
   const [dropUp, setDropUp] = useState(false);
   const ref = useRef();
-  const Languages = ["All languages","JavaScript","Python","Java","TypeScript","C#","C++","PHP","C","React","Ruby",];
+
+  const Languages = [
+    "All languages",
+    "JavaScript",
+    "Python",
+    "Java",
+    "TypeScript",
+    "C#",
+    "C++",
+    "PHP",
+    "C",
+    "React",
+    "Ruby",
+  ];
 
   // close dropdown on outside click
   useEffect(() => {
@@ -16,8 +28,7 @@ function FiltersDropdown({val,setval}) {
       }
     }
     document.addEventListener("mousedown", handleClickOutside);
-    return () =>
-      document.removeEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
   // detect whether to open up or down
@@ -25,17 +36,40 @@ function FiltersDropdown({val,setval}) {
     if (open && ref.current) {
       const rect = ref.current.getBoundingClientRect();
       const spaceBelow = window.innerHeight - rect.bottom;
-      setDropUp(spaceBelow < 300); // if less than 300px space, open upwards
+      setDropUp(spaceBelow < 300);
     }
   }, [open]);
 
+  // handlers
+  const handleLanguageChange = (e) => {
+    const lang = e.target.value;
+    setVal((prev) => ({
+      ...prev,
+      language: lang === "All languages" ? "" : lang,
+    }));
+  };
+
+  const handleStarsChange = (e) => {
+    setVal((prev) => ({
+      ...prev,
+      minStars: Number(e.target.value),
+    }));
+  };
+
+  const handleCreatedChange = (e) => {
+    setVal((prev) => ({
+      ...prev,
+      created: e.target.value,
+    }));
+  };
+
   return (
-    <div className="relative " ref={ref}>
+    <div className="relative" ref={ref}>
       {/* Trigger */}
       <button
         onClick={() => setOpen(!open)}
         className="px-5 py-2 rounded-xl bg-neutral-100 border border-neutral-300 
-                   flex items-center gap-2 hover:bg-neutral-200 "
+                   flex items-center gap-2 hover:bg-neutral-200"
       >
         <span className="md:text-xl text-sm">Filters</span>
         <RiArrowDropDownFill
@@ -57,11 +91,15 @@ function FiltersDropdown({val,setval}) {
           {/* Language */}
           <div className="mb-4">
             <label className="block text-sm font-semibold mb-1">Language</label>
-            <select className="w-full px-3 py-2 border rounded-xl bg-neutral-100 focus:ring-2 focus:ring-purple-500">
+            <select
+              value={val.language || "All languages"}
+              onChange={handleLanguageChange}
+              className="w-full px-3 py-2 border rounded-xl bg-neutral-100 focus:ring-2 focus:ring-purple-500"
+            >
               {Languages.map((lang, idx) => (
-                <option key={idx} >
-                  {lang}</option>
-                
+                <option key={idx} value={lang}>
+                  {lang}
+                </option>
               ))}
             </select>
           </div>
@@ -76,25 +114,32 @@ function FiltersDropdown({val,setval}) {
               min="0"
               max="10000"
               step="100"
-              value={stars}
-              onChange={(e) => setStars(Number(e.target.value))}
+              value={val.minStars ?? 5000}
+              onChange={handleStarsChange}
               className="w-full accent-purple-500"
             />
             <div className="flex justify-between text-xs text-gray-500 mt-1">
               <span>0</span>
-              <span className="font-semibold text-purple-600">{stars}</span>
-              <span>10000+</span> {/* ✅ Changed from 10000 to 10000+ */}
+              <span className="font-semibold text-purple-600">
+                {val.minStars ?? 5000}
+              </span>
+              <span>10000+</span>
             </div>
           </div>
 
           {/* Created */}
-          <div>
+          <div className="relative">
             <label className="block text-sm font-semibold mb-1">Created</label>
-            <select className="w-full px-3 py-2 border rounded-xl bg-neutral-100 focus:ring-2 focus:ring-purple-500">
-              <option>Any time</option>
-              <option>Past week</option>
-              <option>Past month</option>
+            <select
+              value={val.created || "Any time"}
+              onChange={handleCreatedChange}
+              className="w-full px-3 py-2 border rounded-xl bg-neutral-100 focus:ring-2 focus:ring-purple-500 appearance-none"
+            >
+              <option value="Any time">Any time</option>
+              <option value="Past week">Past week</option>
+              <option value="Past month">Past month</option>
             </select>
+            <RiArrowDropDownFill className="absolute right-2.5 top-7  text-3xl text-gray-600 pointer-events-none" />
           </div>
         </div>
       )}

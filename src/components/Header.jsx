@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useContext, useEffect, useRef, useState } from "react";
 import { FiGithub } from "react-icons/fi";
 import { MdAutoGraph } from "react-icons/md";
 import { BsBookmarks } from "react-icons/bs";
@@ -6,10 +6,13 @@ import { Link, useLocation } from "react-router-dom";
 import { IoMdTrendingUp } from "react-icons/io";
 import { GiHamburgerMenu } from "react-icons/gi";
 import { RxCross2 } from "react-icons/rx";
+import { BookmarkContext } from "../Context/BookmarkProvider";
 
 function Header() {
   const location = useLocation();
   const [open, setOpen] = useState(false);
+  const { bookmarks } = useContext(BookmarkContext);
+  console.log(bookmarks.length);
 
   return (
     <div className="">
@@ -75,6 +78,10 @@ function Header() {
           >
             <BsBookmarks />
             <span>Bookmarks</span>
+            <span className="ml-2 px-2 py-0.5 rounded-full bg-purple-600 text-white text-xs font-semibold">
+  {bookmarks.length}
+</span>
+
           </Link>
         </div>
 
@@ -154,6 +161,9 @@ function Header() {
             >
               <BsBookmarks />
               <span>Bookmarks</span>
+              <span className="ml-2 px-2 py-0.5 rounded-full bg-purple-600 text-white text-xs font-semibold">
+                {bookmarks.length}
+              </span>
             </Link>
           </div>
 
