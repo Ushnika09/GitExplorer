@@ -26,6 +26,7 @@ function User() {
       );
 
       setResults(filtered);
+      setQuery("")
     } catch (err) {
       console.error("Error fetching users:", err);
       setError("Failed to fetch users. Try again.");
@@ -35,9 +36,9 @@ function User() {
   }
 
   return (
-    <div className="flex-col flex items-start gap-3.5 justify-center py-3">
-      <div className="flex-col mt-5 flex items-start gap-3.5 justify-center w-full rounded-2xl bg-white shadow px-5 py-5 transition-all duration-300 border-8 border-purple-200 pb-10">
-        <h1 className="text-2xl font-bold text-gray-800">Search User</h1>
+    <div className="flex-col flex items-start gap-3.5 justify-center py-5">
+      <div className="flex-col mt-5 flex items-start gap-3.5 justify-center w-full rounded-2xl bg-white shadow px-10 py-9  transition-all duration-300  pb-15">
+        <h1 className="text-2xl font-bold text-gray-800 pl-1.5">Search User</h1>
 
         {/* Search Box */}
         <div className="relative w-full">
@@ -57,9 +58,15 @@ function User() {
           <BiSearch className="text-2xl absolute left-3 top-1/2 -translate-y-1/2 text-gray-500" />
 
           <button
-            className="absolute top-1/2 -translate-y-1/2 right-2 rounded-xl py-2 px-5 bg-purple-600 
-                       hover:bg-purple-700 transition text-white font-semibold"
+            className={`absolute top-1/2 -translate-y-1/2 right-2 rounded-xl py-2 px-5 
+    font-semibold transition
+    ${
+      query.trim()
+        ? "bg-purple-600 hover:bg-purple-700 text-white cursor-pointer"
+        : "bg-purple-300 text-gray-200 cursor-not-allowed"
+    }`}
             onClick={handleClick}
+            disabled={!query.trim()}
           >
             Search
           </button>

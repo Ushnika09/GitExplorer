@@ -91,7 +91,7 @@ export default function RepoCard({ data }) {
                 {repo.description || "No description available"}
               </p>
               {repo.language && (
-                <span className="w-fit flex bg-purple-100 text-purple-800 text-xs font-medium px-3.5 py-1.5 rounded-full">
+                <span className="w-fit flex bg-purple-100 text-purple-800 text-xs font-medium px-3.5 py-1.5 rounded-full my-1.5">
                   {repo.language}
                 </span>
               )}

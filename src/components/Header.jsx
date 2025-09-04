@@ -16,7 +16,7 @@ function Header() {
 
   return (
     <div className="">
-      <div className="py-4 shadow px-5 flex items-center justify-between w-full transition-all duration-700">
+      <div className="py-4 shadow px-5 flex items-center justify-between w-full transition-all duration-700 fixed top-0 bg-white/90 z-50">
         {/* overlay */}
         {open && (
           <div

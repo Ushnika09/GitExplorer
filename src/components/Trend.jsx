@@ -39,12 +39,12 @@ function Trend() {
 
   return (
     <div className="flex-col flex gap-10">
-      <div className="flex-col flex items-start gap-3.5 justify-center  rounded-xl bg-white shadow px-5 py-5 transition-all duration-300 ">
+      <div className="flex-col flex items-start gap-3.5 justify-center  rounded-xl bg-white shadow px-10 py-10 transition-all duration-300 ">
         <h1 className="text-2xl font-bold">Trending Repositories</h1>
         <h1 className="text-gray-700 font-bold ">Time Range</h1>
-        <div className="flex gap-5 flex-row font-semibold pb-2">
+        <div className="flex gap-5 flex-row font-semibold pb-2 flex-wrap justify-center">
           <button
-            className={`  py-1.5 px-5 md:px-10 rounded-2xl justify-center items-center today ${
+            className={`py-1.5 px-5 md:px-10 rounded-2xl justify-center items-center today ${
               active == "today"
                 ? "bg-purple-500 text-white hover:bg-purple-500/70"
                 : "bg-purple-100/60 hover:bg-purple-200"
@@ -58,7 +58,7 @@ function Trend() {
           </button>
 
           <button
-            className={`  py-1.5 px-5 md:px-10 rounded-2xl justify-center items-center week ${
+            className={`  py-1.5 px-5 md:px-10 rounded-2xl justify-center items-center week text-nowrap ${
               active == "week"
                 ? "bg-purple-500 text-white hover:bg-purple-500/70"
                 : "bg-purple-100/60 hover:bg-purple-200"
@@ -72,7 +72,7 @@ function Trend() {
           </button>
 
           <button
-            className={`  py-1.5 px-5 md:px-10 rounded-2xl justify-center items-center month ${
+            className={`  py-1.5 px-5 md:px-10 rounded-2xl justify-center items-center month text-nowrap ${
               active == "month"
                 ? "bg-purple-500 text-white hover:bg-purple-500/70"
                 : "bg-purple-100/60 hover:bg-purple-200"
@@ -86,14 +86,14 @@ function Trend() {
           </button>
         </div>
         <h1 className="text-gray-700 font-bold ">Language</h1>
-        <div className="flex gap-2.5 items-center flex-wrap ">
+        <div className="flex gap-3.5 items-center flex-wrap ">
           {Languages.map((item) => {
             return (
               <button
-                className={`  py-1.5 px-5  rounded-2xl items-center text-nowrap font-bold ${item} 
+                className={`  py-2.5 px-5  rounded-2xl items-center text-nowrap justify-center font-bold ${item} 
                             ${
                               val.lang == item
-                                ? "bg-purple-500 text-white hover:bg-purple-500/70"
+                                ? "bg-purple-500 text-white hover:bg-purple-500"
                                 : "bg-purple-100/60 hover:bg-purple-200"
                             }`}
                 onClick={() => setVal({ ...val, lang: item })}
