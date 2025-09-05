@@ -29,7 +29,7 @@ function BookmarkAnalytics() {
   }, [bookmarks]);
 
   return (
-    <div className="grid-cols-1 grid items-center md:grid-cols-2 lg:grid-cols-4 justify-between py-5 gap-10 flex-wrap">
+    <div className="grid-cols-1 grid items-center md:grid-cols-2 lg:grid-cols-4 justify-between py-5 gap-10 flex-wrap mx-5">
       {/* Total Bookmarks */}
       <div className="flex flex-col gap-1.5 shadow rounded-2xl flex-1 bg-white px-7.5 py-5.5">
         <div className="flex items-center gap-10 justify-between">

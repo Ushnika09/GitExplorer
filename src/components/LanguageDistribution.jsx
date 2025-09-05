@@ -10,7 +10,7 @@ function LanguageDistribution() {
   const topLanguages = useMemo(() => {
     const counts = {};
     bookmarks.forEach((repo) => {
-      const lang = repo.language || "Unknown";
+      const lang = repo.language || "Not Specified";
       counts[lang] = (counts[lang] || 0) + 1;
     });
     return Object.entries(counts)
@@ -28,7 +28,7 @@ function LanguageDistribution() {
     );
 
   return (
-    <div className="bg-white shadow rounded-2xl p-6">
+    <div className="bg-white shadow rounded-3xl p-6 mx-4 border-purple-200 border-0">
       <div className="flex items-center justify-between mb-5">
         <h2 className="flex items-center gap-2 text-2xl font-bold">
           <IoMdCode className="text-4xl text-purple-600" /> Language Distribution
