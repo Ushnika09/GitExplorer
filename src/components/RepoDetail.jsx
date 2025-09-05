@@ -65,7 +65,7 @@ function RepoDetails() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-purple-50 to-indigo-100 flex items-center justify-center">
+      <div className="min-h-screen  flex items-center justify-center">
         <div className="text-center">
           <div className="animate-spin rounded-full h-18 w-18 border-b-2 border-purple-600 mx-auto mb-4"></div>
           <p className="text-gray-600 font-bold">Loading repository data...</p>
@@ -76,7 +76,7 @@ function RepoDetails() {
 
   if (error) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-purple-50 to-indigo-100 flex items-center justify-center p-6">
+      <div className="min-h-screen  flex items-center justify-center p-6">
         <div className="max-w-md w-full bg-white rounded-2xl shadow-lg p-8 text-center">
           <BiErrorCircle className="text-5xl text-red-500 mx-auto mb-4" />
           <h2 className="text-2xl font-bold text-gray-800 mb-2">Repository Not Found</h2>
@@ -172,7 +172,7 @@ function RepoDetails() {
   const sshUrl = `git@github.com:${owner}/${name}.git`;
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-purple-50 to-indigo-100 py-8 px-4">
+    <div className="min-h-screen  py-8 px-4">
       <div className="max-w-6xl mx-auto">
         {/* Back Button */}
         <Link 
