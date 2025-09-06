@@ -10,31 +10,46 @@ import DataProvider from "./Context/DataContext.jsx";
 import BookmarkCard from "./components/BookmarkCard.jsx";
 import RepoDetails from "./components/RepoDetail.jsx";
 import { BookmarkProvider } from "./Context/BookmarkProvider.jsx";
+import LandingPage from "./Layout/LandingPage.jsx";
+import Signup from "./Layout/Signup.jsx";
+import Login from "./Layout/Login.jsx";
 
 const appRoute = createBrowserRouter([
   {
-    element: <App />,
+    element: <LandingPage />,
     path: "/",
+  },
+  {
+    element: <Signup/>,
+    path: "/register",
+  },
+  {
+    element: <Login/>,
+    path: "/login",
+  },
+  {
+    element: <App />,
+    path: "/app",
     children: [
       {
         element: <Home />,
-        path: "/",
+        path: "home",
       },
       {
         element: <Analytics />,
-        path: "/analytics",
+        path: "analytics",
       },
       {
         element: <Bookmarks />,
-        path: "/bookmarks",
+        path: "bookmarks",
       },
       {
-        element: <BookmarkCard/>,
-        path: "/details/:id",
+        element: <BookmarkCard />,
+        path: "details/:id",
       },
       {
-        element: <RepoDetails/>,
-        path: "/repodetails/:owner/:name",
+        element: <RepoDetails />,
+        path: "repodetails/:owner/:name",
       },
     ],
   },
@@ -43,7 +58,7 @@ const appRoute = createBrowserRouter([
 createRoot(document.getElementById("root")).render(
   <DataProvider>
     <BookmarkProvider>
-    <RouterProvider router={appRoute} />
+      <RouterProvider router={appRoute} />
     </BookmarkProvider>
   </DataProvider>
 );

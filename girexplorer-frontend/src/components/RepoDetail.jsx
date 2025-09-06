@@ -82,7 +82,7 @@ function RepoDetails() {
           <h2 className="text-2xl font-bold text-gray-800 mb-2">Repository Not Found</h2>
           <p className="text-gray-600 mb-6">We couldn't find the repository "{owner}/{name}"</p>
           <Link
-            to="/"
+            to="/app/home"
             className="inline-flex items-center px-5 py-2.5 bg-purple-600 text-white rounded-lg font-medium hover:bg-purple-700 transition-colors"
           >
             <BiArrowBack className="mr-2" />
@@ -176,7 +176,7 @@ function RepoDetails() {
       <div className="max-w-6xl mx-auto">
         {/* Back Button */}
         <Link 
-          to="/" 
+          to="/app/home" 
           className="inline-flex items-center gap-2 px-4 py-2.5 bg-white rounded-xl shadow-sm text-purple-600 font-medium hover:bg-purple-50 transition-colors mb-6"
         >
           <BiArrowBack />

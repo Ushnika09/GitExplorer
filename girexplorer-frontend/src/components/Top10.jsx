@@ -1,16 +1,21 @@
 import React, { useContext } from "react";
-import { BiBookmark, BiStar } from "react-icons/bi";
+import { BiStar, BiBookmark } from "react-icons/bi";
 import { FaBookmark, FaCodeFork } from "react-icons/fa6";
 import { GoShare } from "react-icons/go";
-import { CiCalendar } from "react-icons/ci";
 import { IoEyeOutline } from "react-icons/io5";
+import { CiCalendar } from "react-icons/ci";
 import { Link } from "react-router-dom";
 import moment from "moment";
+import { AiOutlineLoading3Quarters } from "react-icons/ai";
 import { BookmarkContext } from "../Context/BookmarkProvider";
+import { useData } from "../Context/DataContext";
 
-export default function RepoCard({ data }) {
+function Top10() {
+  const { data, loading } = useData();
   const { bookmarks, setBookmarks } = useContext(BookmarkContext);
+  const top = data?.items?.slice(0, 10) || [];
 
+  // Toggle bookmark
   function handleClick(repo) {
     const exists = bookmarks.find((b) => b.id === repo.id);
     if (exists) {
@@ -23,30 +28,37 @@ export default function RepoCard({ data }) {
           name: repo.name,
           owner: repo.owner.login,
           url: repo.html_url,
-          language: repo.language || "Unknown",
-          stargazers_count: repo.stargazers_count || 0,
-          forks_count: repo.forks_count || 0,
-          watchers: repo.watchers || 0,
-          created_at: repo.created_at,
+          note: "",
           avatar: repo.owner.avatar_url,
         },
       ]);
     }
   }
 
+  if (loading) {
+    return (
+      <div className="flex flex-col items-center justify-center h-64 gap-4">
+        <AiOutlineLoading3Quarters className="animate-spin text-4xl text-purple-500" />
+        <span className="text-purple-500 text-lg font-medium">Loading</span>
+      </div>
+    );
+  }
+
   return (
-    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-      {data.map((repo) => {
+    <div className="flex flex-col gap-5 my-10">
+      {/* Heading */}
+      <h2 className="text-2xl md:text-3xl font-bold text-gray-800 mb-3">
+        Top 10 Trending Repositories
+      </h2>
+
+      {/* Top 10 Cards */}
+      {top.map((repo) => {
         const isBookmarked = bookmarks.some((b) => b.id === repo.id);
 
         return (
           <div
             key={repo.id}
-            className="flex flex-col justify-between gap-4 bg-white rounded-xl shadow-xl p-5 
-                       transition-all duration-300 hover:scale-105 
-                       hover:bg-gradient-to-br hover:from-purple-200 hover:via-purple-100 
-                       border border-purple-700 hover:to-pink-200
-                       min-h-[280px] xl:min-w-[380px]"
+            className="flex flex-col gap-3 bg-white rounded-xl shadow-md p-5 transition-transform duration-300 hover:scale-105 hover:shadow-xl hover:bg-gradient-to-br from-purple-100 via-purple-50 to-pink-50"
           >
             {/* Header */}
             <div className="flex justify-between items-center">
@@ -56,7 +68,9 @@ export default function RepoCard({ data }) {
                   alt={repo.owner.login}
                   className="rounded-full h-12 w-12"
                 />
-                <h1 className="text-sm md:text-lg font-medium">{repo.owner.login}</h1>
+                <h1 className="text-sm md:text-lg font-medium">
+                  {repo.owner.login}
+                </h1>
               </div>
 
               <div className="flex items-center gap-3 text-gray-600">
@@ -72,7 +86,11 @@ export default function RepoCard({ data }) {
                   />
                 )}
 
-                <a href={repo.clone_url} target="_blank" rel="noopener noreferrer">
+                <a
+                  href={repo.clone_url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
                   <GoShare className="cursor-pointer text-xl hover:text-purple-500" />
                 </a>
               </div>
@@ -81,7 +99,7 @@ export default function RepoCard({ data }) {
             {/* Repo Info */}
             <div className="flex flex-col gap-2">
               <Link
-                to={`/repodetails/${repo.owner.login}/${repo.name}`}
+                to={`/app/repodetails/${repo.owner.login}/${repo.name}`}
                 className="text-lg font-semibold truncate hover:text-purple-600 hover:underline transition-colors"
               >
                 {repo.name}
@@ -121,3 +139,5 @@ export default function RepoCard({ data }) {
     </div>
   );
 }
+
+export default Top10;

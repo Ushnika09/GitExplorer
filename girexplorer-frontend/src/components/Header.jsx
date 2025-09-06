@@ -45,9 +45,9 @@ function Header() {
         {/* middle */}
         <div className="hidden md:flex lg:gap-4 gap-1.5 transition-all duration-300">
           <Link
-            to="/"
+            to="/app/home"
             className={`transition-all duration-300 flex gap-2 px-5 py-2 rounded-3xl font-medium items-center ${
-              location.pathname === "/"
+              location.pathname === "/app/home"
                 ? "bg-blue-700 text-white hover:bg-blue-800"
                 : "bg-white hover:bg-neutral-200"
             }`}
@@ -57,9 +57,9 @@ function Header() {
           </Link>
 
           <Link
-            to="/analytics"
+            to="/app/analytics"
             className={`transition-all duration-300 flex gap-2 px-5 py-2 rounded-3xl font-medium items-center ${
-              location.pathname === "/analytics"
+              location.pathname === "/app/analytics"
                 ? "bg-blue-700 text-white hover:bg-blue-800"
                 : "bg-white hover:bg-neutral-200"
             }`}
@@ -69,9 +69,9 @@ function Header() {
           </Link>
 
           <Link
-            to="/bookmarks"
+            to="/app/bookmarks"
             className={`transition-all duration-300 flex gap-2 px-5 py-2 rounded-3xl font-medium items-center ${
-              location.pathname === "/bookmarks"
+              location.pathname === "/app/bookmarks"
                 ? "bg-blue-700 text-white hover:bg-blue-800"
                 : "bg-white hover:bg-neutral-200"
             }`}
