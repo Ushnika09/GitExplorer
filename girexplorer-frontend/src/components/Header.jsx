@@ -2,7 +2,7 @@ import React, { useContext, useEffect, useRef, useState } from "react";
 import { FiGithub } from "react-icons/fi";
 import { MdAutoGraph } from "react-icons/md";
 import { BsBookmarks } from "react-icons/bs";
-import { Link, useLocation } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import { IoMdTrendingUp } from "react-icons/io";
 import { GiHamburgerMenu } from "react-icons/gi";
 import { RxCross2 } from "react-icons/rx";
@@ -10,9 +10,24 @@ import { BookmarkContext } from "../Context/BookmarkProvider";
 
 function Header() {
   const location = useLocation();
+  const navigate = useNavigate();
   const [open, setOpen] = useState(false);
   const { bookmarks } = useContext(BookmarkContext);
-  console.log(bookmarks.length);
+  
+  // Get user data from localStorage
+  const user = JSON.parse(localStorage.getItem("user") || "null");
+
+  const handleLogout = () => {
+    // Remove user data from localStorage
+    localStorage.removeItem("jwt");
+    localStorage.removeItem("user");
+    
+    // Redirect to home page
+    navigate("/");
+    
+    // Close mobile menu if open
+    setOpen(false);
+  };
 
   return (
     <div className="">
@@ -42,8 +57,8 @@ function Header() {
           </div>
         </div>
 
-        {/* middle */}
-        <div className="hidden md:flex lg:gap-4 gap-1.5 transition-all duration-300">
+        {/* middle - Show on lg screens and above */}
+        <div className="hidden lg:flex lg:gap-4 gap-1.5 transition-all duration-300">
           <Link
             to="/app/home"
             className={`transition-all duration-300 flex gap-2 px-5 py-2 rounded-3xl font-medium items-center ${
@@ -79,35 +94,37 @@ function Header() {
             <BsBookmarks />
             <span>Bookmarks</span>
             <span className="ml-2 px-2 py-0.5 rounded-full bg-purple-600 text-white text-xs font-semibold">
-  {bookmarks.length}
-</span>
-
+              {bookmarks.length}
+            </span>
           </Link>
         </div>
 
-        {/* right */}
-        <div className="hidden lg:flex flex-row">
-          <button
-            className={`transition-all duration-300 flex gap-1 px-3 py-1.5 rounded-3xl font-medium items-center text-15803D 
-            bg-gradient-to-r from-green-50 to-emerald-50 
-            border border-green-200 
-            shadow-sm text-[0.8rem] shrink-0`}
-          >
-            <div className="p-1.5 rounded-full animate-pulse bg-green-200">
-              <IoMdTrendingUp className=" " />
+        {/* right - Show on lg screens and above */}
+        <div className="hidden lg:flex flex-row items-center gap-4">
+          {user && (
+            <div className="flex items-center gap-2">
+              <span className="text-sm text-gray-700">Welcome, {user.name}</span>
+              <button
+                onClick={handleLogout}
+                className="px-3 py-1.5 bg-red-100 text-red-700 rounded-xl font-medium hover:bg-red-200 transition-colors text-sm"
+              >
+                Logout
+              </button>
             </div>
-            <span className="text-nowrap">Live Trending</span>
-          </button>
+          )}
+          
         </div>
 
+        {/* Hamburger menu - Show on screens smaller than lg */}
         <GiHamburgerMenu
-          className="text-2xl md:hidden cursor-pointer"
+          className="text-2xl lg:hidden cursor-pointer"
           onClick={() => setOpen(!open)}
         />
       </div>
 
+      {/* Mobile menu - Show on screens smaller than lg */}
       {open && (
-        <div className="flex flex-col absolute top-0 right-0 pt-5 z-50 items-center justify-start bg-white w-64 min-h-screen shadow transition-all duration-700">
+        <div className="flex flex-col fixed top-0 right-0 pt-5 z-50 items-center justify-start bg-white w-64 min-h-screen shadow transition-all duration-700 lg:hidden">
           <RxCross2
             className="absolute right-5 top-5 text-xl rounded-full border cursor-pointer"
             onClick={() => setOpen(false)}
@@ -125,39 +142,49 @@ function Header() {
             </div>
           </div>
 
+          {/* User info in mobile menu */}
+          {user && (
+            <div className="w-full px-5 py-3 border-b border-gray-200">
+              <p className="text-sm text-gray-700">Welcome, {user.name}</p>
+            </div>
+          )}
+
           {/* middle */}
           <div className="flex flex-col gap-1.5 transition-all duration-300 my-5 w-full">
             <Link
-              to="/"
+              to="/app/home"
               className={`transition-all duration-300 flex gap-2 px-5 py-2 font-medium items-center ${
-                location.pathname === "/"
+                location.pathname === "/app/home"
                   ? "bg-blue-700 text-white hover:bg-blue-800"
                   : "bg-white hover:bg-neutral-200"
               }`}
+              onClick={() => setOpen(false)}
             >
               <FiGithub />
               <span>Explorer</span>
             </Link>
 
             <Link
-              to="/analytics"
+              to="/app/analytics"
               className={`transition-all duration-300 flex gap-2 px-5 py-2 font-medium items-center ${
-                location.pathname === "/analytics"
+                location.pathname === "/app/analytics"
                   ? "bg-blue-700 text-white hover:bg-blue-800"
                   : "bg-white hover:bg-neutral-200"
               }`}
+              onClick={() => setOpen(false)}
             >
               <MdAutoGraph />
               <span>Analytics</span>
             </Link>
 
             <Link
-              to="/bookmarks"
+              to="/app/bookmarks"
               className={`transition-all duration-300 flex gap-2 px-5 py-2 font-medium items-center ${
-                location.pathname === "/bookmarks"
+                location.pathname === "/app/bookmarks"
                   ? "bg-blue-700 text-white hover:bg-blue-800"
                   : "bg-white hover:bg-neutral-200"
               }`}
+              onClick={() => setOpen(false)}
             >
               <BsBookmarks />
               <span>Bookmarks</span>
@@ -166,6 +193,18 @@ function Header() {
               </span>
             </Link>
           </div>
+
+          {/* Logout button in mobile menu */}
+          {user && (
+            <div className="w-full px-5 mt-auto mb-5">
+              <button
+                onClick={handleLogout}
+                className="w-full px-4 py-2 bg-red-100 text-red-700 rounded-xl font-medium hover:bg-red-200 transition-colors text-sm"
+              >
+                Logout
+              </button>
+            </div>
+          )}
 
           {/* right */}
           <div className="flex flex-col mx-3 rounded-2xl justify-center items-center py-4 px-2 shadow-sm bg-gradient-to-r from-green-50 to-emerald-50 ">

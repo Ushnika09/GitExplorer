@@ -25,7 +25,7 @@ function Bookmarks() {
             Start exploring repositories and bookmark your favorites to see them here.
           </h1>
           <Link
-            to={"/"}
+            to={"/app/home"}
             className="flex gap-1 font-bold py-2.5 px-5 md:px-10 rounded-2xl justify-center items-center repo bg-purple-500 text-white hover:bg-purple-500/70"
           >
             Explore Repositories

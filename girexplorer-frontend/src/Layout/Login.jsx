@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { FiGithub, FiEye, FiEyeOff, FiCheck, FiArrowRight } from "react-icons/fi";
+import { FiGithub, FiEye, FiEyeOff, FiCheck, FiArrowRight, FiArrowLeft } from "react-icons/fi";
 import { BiLogIn } from "react-icons/bi";
 import { Link } from "react-router-dom";
 import axios from "axios";
@@ -22,43 +22,40 @@ function Login() {
     }));
   };
 
-  
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setIsLoading(true);
 
-const handleSubmit = async (e) => {
-  e.preventDefault();
-  setIsLoading(true);
+    try {
+      // POST request to backend login route
+      const res = await axios.post("http://localhost:5000/api/login", {
+        email: formData.email,
+        password: formData.password,
+      });
 
-  try {
-    // POST request to backend login route
-    const res = await axios.post("http://localhost:5000/api/login", {
-      email: formData.email,
-      password: formData.password,
-    });
+      // Backend returns { message, user, token }
+      const { token, user } = res.data;
 
-    // Backend returns { message, user, token }
-    const { token, user } = res.data;
+      // Save JWT to localStorage (or cookie)
+      localStorage.setItem("jwt", token);
 
-    // Save JWT to localStorage (or cookie)
-    localStorage.setItem("jwt", token);
+      // Optionally save user info
+      localStorage.setItem("user", JSON.stringify(user));
 
-    // Optionally save user info
-    localStorage.setItem("user", JSON.stringify(user));
+      setIsSubmitted(true); // Show success screen
+      setIsLoading(false);
 
-    setIsSubmitted(true); // Show success screen
-    setIsLoading(false);
+      // Redirect after a delay (optional)
+      setTimeout(() => {
+        window.location.href = "/app/home"; // dashboard route
+      }, 1500);
 
-    // Redirect after a delay (optional)
-    setTimeout(() => {
-      window.location.href = "/app/home"; // dashboard route
-    }, 1500);
-
-  } catch (err) {
-    setIsLoading(false);
-    console.error(err);
-    alert(err.response?.data?.message || "Login failed");
-  }
-};
-
+    } catch (err) {
+      setIsLoading(false);
+      console.error(err);
+      alert(err.response?.data?.message || "Login failed");
+    }
+  };
 
   if (isSubmitted) {
     return (
@@ -66,7 +63,7 @@ const handleSubmit = async (e) => {
         <div className="max-w-md w-full bg-white rounded-2xl shadow-xl overflow-hidden border border-purple-100">
           <div className="bg-gradient-to-r from-purple-600 to-indigo-600 py-6 px-8 text-center">
             <div className="flex items-center justify-center gap-3 mb-4">
-              <div className="p-2 bg-white/20 rounded-xl">
+              <div  className="p-2 bg-white/20 rounded-xl">
                 <FiGithub className="text-2xl text-white" />
               </div>
               <h1 className="text-2xl font-bold text-white">GitExplorer</h1>
@@ -98,6 +95,15 @@ const handleSubmit = async (e) => {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-purple-50 to-indigo-100 flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
+      {/* Back Button */}
+      <Link 
+        to="/" 
+        className="absolute top-6 left-6 flex items-center gap-2 px-4 py-2 bg-white rounded-xl shadow-sm text-purple-600 font-medium hover:bg-purple-50 transition-colors"
+      >
+        <FiArrowLeft className="text-lg" />
+        Go Back
+      </Link>
+
       <div className="max-w-md w-full bg-white rounded-2xl shadow-xl overflow-hidden border border-purple-100">
         {/* Header */}
         <div className="bg-gradient-to-r from-purple-600 to-indigo-600 py-6 px-8 text-center">
@@ -203,7 +209,6 @@ const handleSubmit = async (e) => {
           </form>
 
           <div className="mt-6">
-
             <div className="mt-6 text-center">
               <p className="text-sm text-gray-700">
                 Don't have an account?{' '}

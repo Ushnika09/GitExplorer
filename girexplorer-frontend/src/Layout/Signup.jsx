@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { FiGithub, FiEye, FiEyeOff, FiCheck, FiArrowRight } from "react-icons/fi";
+import { FiGithub, FiEye, FiEyeOff, FiCheck, FiArrowRight, FiArrowLeft } from "react-icons/fi";
 import { BiUserPlus } from "react-icons/bi";
 import { Link } from "react-router-dom";
 import axios from "axios";
@@ -25,47 +25,45 @@ function Signup() {
     }));
   };
 
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    
+    // Validate passwords match
+    if (formData.password !== formData.confirmPassword) {
+      alert("Passwords don't match");
+      return;
+    }
 
-const handleSubmit = async (e) => {
-  e.preventDefault();
-  
-  // Validate passwords match
-  if (formData.password !== formData.confirmPassword) {
-    alert("Passwords don't match");
-    return;
-  }
+    setIsLoading(true);
 
-  setIsLoading(true);
+    try {
+      const res = await axios.post("http://localhost:5000/api/register", {
+        name: formData.name,
+        email: formData.email,
+        password: formData.password,
+      });
 
-  try {
-    const res = await axios.post("http://localhost:5000/api/register", {
-      name: formData.name,
-      email: formData.email,
-      password: formData.password,
-    });
+      // Backend should return { message, user, token }
+      const { token, user } = res.data;
 
-    // Backend should return { message, user, token }
-    const { token, user } = res.data;
+      // Optionally save JWT for auto-login
+      localStorage.setItem("jwt", token);
+      localStorage.setItem("user", JSON.stringify(user));
 
-    // Optionally save JWT for auto-login
-    localStorage.setItem("jwt", token);
-    localStorage.setItem("user", JSON.stringify(user));
+      setIsSubmitted(true);
+      setIsLoading(false);
 
-    setIsSubmitted(true);
-    setIsLoading(false);
+      // Optional: redirect to dashboard after delay
+      setTimeout(() => {
+        window.location.href = "/login";
+      }, 1500);
 
-    // Optional: redirect to dashboard after delay
-    setTimeout(() => {
-      window.location.href = "/login";
-    }, 1500);
-
-  } catch (err) {
-    setIsLoading(false);
-    console.error(err);
-    alert(err.response?.data?.message || "Signup failed");
-  }
-};
-
+    } catch (err) {
+      setIsLoading(false);
+      console.error(err);
+      alert(err.response?.data?.message || "Signup failed");
+    }
+  };
 
   if (isSubmitted) {
     return (
@@ -88,7 +86,7 @@ const handleSubmit = async (e) => {
             <div className="mt-8">
               <div className="inline-flex rounded-md shadow">
                 <Link
-                  to="/explore"
+                  to="/login"
                   className="inline-flex items-center gap-2 px-5 py-3 border border-transparent text-base font-medium rounded-xl text-white bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700"
                 >
                   Sign In
@@ -104,6 +102,15 @@ const handleSubmit = async (e) => {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-purple-50 to-indigo-100 flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
+      {/* Back Button */}
+      <Link 
+        to="/" 
+        className="absolute top-6 left-6 flex items-center gap-2 px-4 py-2 bg-white rounded-xl shadow-sm text-purple-600 font-medium hover:bg-purple-50 transition-colors"
+      >
+        <FiArrowLeft className="text-lg" />
+        Go Back
+      </Link>
+
       <div className="max-w-md w-full bg-white rounded-2xl shadow-xl overflow-hidden border border-purple-100">
         {/* Header */}
         <div className="bg-gradient-to-r from-purple-600 to-indigo-600 py-6 px-8 text-center">
@@ -229,7 +236,7 @@ const handleSubmit = async (e) => {
               <button
                 type="submit"
                 disabled={isLoading}
-                className="w-full flex justify-center items-center gap-2 py-3.5 px-4 border border-transparent rounded-xl shadow-sm text-sm font-medium text-white bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-purple-500 transition-all disabled:opacity-75 disabled:cursor-not-allowed"
+                className="w-full flex justify-center items-center gap-2 py-3.5 px-4 border border-transparent rounded-xl shadow-sm text-sm font-medium text-white bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-purple-500 transition-all disabled:opacity-75 disabled: cursor-not-allowed"
               >
                 {isLoading ? (
                   <>
@@ -247,7 +254,6 @@ const handleSubmit = async (e) => {
           </form>
 
           <div className="mt-6">
-
             <div className="mt-6 text-center">
               <p className="text-sm text-gray-700">
                 Already have an account?{' '}

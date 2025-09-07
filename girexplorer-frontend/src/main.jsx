@@ -13,6 +13,7 @@ import { BookmarkProvider } from "./Context/BookmarkProvider.jsx";
 import LandingPage from "./Layout/LandingPage.jsx";
 import Signup from "./Layout/Signup.jsx";
 import Login from "./Layout/Login.jsx";
+import ProtectRoutes from "./components/ProtectRoutes.jsx";
 
 const appRoute = createBrowserRouter([
   {
@@ -20,36 +21,41 @@ const appRoute = createBrowserRouter([
     path: "/",
   },
   {
-    element: <Signup/>,
+    element: <Signup />,
     path: "/register",
   },
   {
-    element: <Login/>,
+    element: <Login />,
     path: "/login",
   },
   {
-    element: <App />,
-    path: "/app",
+    element: <ProtectRoutes />,
     children: [
       {
-        element: <Home />,
-        path: "home",
-      },
-      {
-        element: <Analytics />,
-        path: "analytics",
-      },
-      {
-        element: <Bookmarks />,
-        path: "bookmarks",
-      },
-      {
-        element: <BookmarkCard />,
-        path: "details/:id",
-      },
-      {
-        element: <RepoDetails />,
-        path: "repodetails/:owner/:name",
+        element: <App />,
+        path: "/app",
+        children: [
+          {
+            element: <Home />,
+            path: "home",
+          },
+          {
+            element: <Analytics />,
+            path: "analytics",
+          },
+          {
+            element: <Bookmarks />,
+            path: "bookmarks",
+          },
+          {
+            element: <BookmarkCard />,
+            path: "details/:id",
+          },
+          {
+            element: <RepoDetails />,
+            path: "repodetails/:owner/:name",
+          },
+        ],
       },
     ],
   },

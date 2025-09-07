@@ -3,6 +3,7 @@ import dbConnection from "./config.js"
 import router from "./Routes/UserRoutes.js"
 import { AuthMiddlewear } from "./Middlewears/AuthMiddlewear.js"
 import cors from "cors"
+import BookmarkRoutes from "./Routes/BookmarkRoutes.js"
 
 const app=express()
 app.use(cors())
@@ -15,6 +16,7 @@ app.get("/test",AuthMiddlewear,(req,res)=>{
 
 app.use(express.json())
 app.use("/api",router)
+app.use("/api/bookmarks", BookmarkRoutes);
 
 const PORT=5000
 app.listen(PORT,(req,res)=>{

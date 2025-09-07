@@ -1,31 +1,78 @@
-// BookmarkContext.jsx
-import React, { createContext, useCallback } from "react";
-import useLocalStorage from "../../utils/Helperbookmark";
+// BookmarkProvider.jsx
+import React, { createContext, useState, useEffect } from "react";
+import axios from "axios";
 
 export const BookmarkContext = createContext();
 
 export function BookmarkProvider({ children }) {
-  const [bookmarks, setBookmarks] = useLocalStorage("bookmarks", []);
+  const [bookmarks, setBookmarks] = useState([]);
 
-  // Function to remove a single bookmark
-  const removeBookmark = useCallback((repoId) => {
-    setBookmarks(prevBookmarks => 
-      prevBookmarks.filter(bookmark => bookmark.id !== repoId)
+  // Load bookmarks on mount
+  useEffect(() => {
+    const token = localStorage.getItem("jwt");
+    if (token) {
+      axios
+        .get("http://localhost:5000/api/bookmarks", {
+          headers: { Authorization: `Bearer ${token}` },
+        })
+        .then((res) => setBookmarks(res.data))
+        .catch((err) => console.error(err));
+    }
+  }, []);
+
+  const addBookmark = async (repo) => {
+    const token = localStorage.getItem("jwt");
+    const res = await axios.post(
+      "http://localhost:5000/api/bookmarks",
+      repo,
+      {
+        headers: { Authorization: `Bearer ${token}` },
+      }
     );
-  }, [setBookmarks]);
+    setBookmarks((prev) => [...prev, res.data]);
+  };
 
-  // Function to clear all bookmarks
-  const clearAllBookmarks = useCallback(() => {
+  const removeBookmark = async (id) => {
+    const token = localStorage.getItem("jwt");
+    await axios.delete(`http://localhost:5000/api/bookmarks/${id}`, {
+      headers: { Authorization: `Bearer ${token}` },
+    });
+    setBookmarks((prev) => prev.filter((b) => b._id !== id));
+  };
+
+  const clearAllBookmarks = async () => {
+    const token = localStorage.getItem("jwt");
+    await axios.delete("http://localhost:5000/api/bookmarks", {
+      headers: { Authorization: `Bearer ${token}` },
+    });
     setBookmarks([]);
-  }, [setBookmarks]);
+  };
+
+  // ✅ extra: updateBookmark (used only by RecentBookmarks)
+  const updateBookmark = async (id, updates) => {
+    const token = localStorage.getItem("jwt");
+    const res = await axios.patch(
+      `http://localhost:5000/api/bookmarks/${id}`,
+      updates,
+      {
+        headers: { Authorization: `Bearer ${token}` },
+      }
+    );
+    setBookmarks((prev) =>
+      prev.map((b) => (b._id === id ? res.data : b))
+    );
+  };
 
   return (
-    <BookmarkContext.Provider value={{ 
-      bookmarks, 
-      setBookmarks,
-      removeBookmark,
-      clearAllBookmarks 
-    }}>
+    <BookmarkContext.Provider
+      value={{
+        bookmarks,
+        addBookmark,
+        removeBookmark,
+        clearAllBookmarks,
+        updateBookmark, // safe to expose, not required by RepoCard/Top10
+      }}
+    >
       {children}
     </BookmarkContext.Provider>
   );

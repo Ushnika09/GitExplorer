@@ -217,8 +217,10 @@ function RepoDetails() {
               rel="noopener noreferrer"
               className="inline-flex items-center gap-2 px-5 py-2.5 bg-purple-600 text-white rounded-xl font-medium hover:bg-purple-700 transition-colors shadow-md hover:shadow-lg"
             >
-              <BiGitRepoForked className="text-lg" />
+              <BiGitRepoForked className="text-lg " />
+              <span className="text-nowrap">
               View on GitHub
+              </span>
             </a>
           </div>
         </div>
