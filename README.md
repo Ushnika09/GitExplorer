@@ -43,7 +43,7 @@ npm install
 ```
 Backend Setup - Start Server
 ```bash
-npm run dev
+npm start
 ```
 ## Frontend Setup - Navigate and Install Dependencies
 ```bash
@@ -52,7 +52,7 @@ npm install
 ```
 Frontend Setup - Start Development Server
 ```bash
-npm start
+npm run dev
 ```
 ## 📁 Project Structure
 ```bash
