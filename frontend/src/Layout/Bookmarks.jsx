@@ -2,13 +2,13 @@ import React, { useContext } from "react";
 import { BsBookmarks } from "react-icons/bs";
 import Bookmarkdetails from "../components/Bookmarkdetails";
 import { Link } from "react-router-dom";
-import { BookmarkContext } from "../Context/BookmarkProvider"; // ✅ import context
+import { BookmarkContext } from "../Context/BookmarkProvider"; 
 
 function Bookmarks() {
-  const { bookmarks } = useContext(BookmarkContext); // ✅ get bookmarks from context
+  const { bookmarks } = useContext(BookmarkContext); 
 
   return (
-    <div className="flex flex-col justify-center my-7 mx-5">
+    <div className="flex flex-col justify-center my-7  max-w-6xl gap-4 w-full mx-auto">
       <h1 className="flex gap-2.5 text-4xl font-bold items-center">
         <BsBookmarks className="text-purple-600" />
         <span>Bookmarked Repositories</span>
@@ -32,7 +32,7 @@ function Bookmarks() {
           </Link>
         </div>
       ) : (
-        <Bookmarkdetails /> // ✅ shows analytics or bookmarked repos
+        <Bookmarkdetails /> //  shows analytics or bookmarked repos
       )}
     </div>
   );

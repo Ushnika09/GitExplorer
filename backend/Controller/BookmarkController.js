@@ -10,9 +10,22 @@ export const getBookmarks = async (req, res) => {
   }
 };
 
-// 📌 Add a bookmark
+//  Add a bookmark
 export const addBookmark = async (req, res) => {
   try {
+    // Check if bookmark already exists for this user
+    const existingBookmark = await BookmarkModel.findOne({
+      userId: req.user.id,
+      repoId: req.body.repoId
+    });
+
+    if (existingBookmark) {
+      return res.status(400).json({ 
+        message: "Bookmark already exists",
+        bookmark: existingBookmark 
+      });
+    }
+
     const newBookmark = new BookmarkModel({
       ...req.body,
       userId: req.user.id,
@@ -47,7 +60,29 @@ export const clearBookmarks = async (req, res) => {
   }
 };
 
-// Update bookmark note
+// Update bookmark (note or other fields)
+export const updateBookmark = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const updates = req.body;
+    
+    const updated = await BookmarkModel.findOneAndUpdate(
+      { _id: id, userId: req.user.id },
+      updates,
+      { new: true }
+    );
+    
+    if (!updated) {
+      return res.status(404).json({ message: "Bookmark not found" });
+    }
+    
+    res.json(updated);
+  } catch (err) {
+    res.status(500).json({ message: "Error updating bookmark" });
+  }
+};
+
+// Legacy updateBookmarkNote endpoint (kept for backward compatibility)
 export const updateBookmarkNote = async (req, res) => {
   try {
     const { id } = req.params;

@@ -1,16 +1,20 @@
 import React, { useContext, useState, useMemo } from "react";
 import { BookmarkContext } from "../Context/BookmarkProvider";
-import { BiStar, BiBookmark, BiSearch, BiSort, BiTrash, BiX, BiNote } from "react-icons/bi";
+import { BiStar, BiBookmark, BiSearch, BiSort, BiTrash, BiX, BiNote, BiEdit, BiCheck } from "react-icons/bi";
 import { FaCodeFork } from "react-icons/fa6";
 import { Link } from "react-router-dom";
 import moment from "moment";
 
 function Bookmarks() {
-  const { bookmarks, removeBookmark, clearAllBookmarks } = useContext(BookmarkContext);
+  const { bookmarks, removeBookmark, clearAllBookmarks, updateBookmark } = useContext(BookmarkContext);
   const [searchQuery, setSearchQuery] = useState("");
   const [sortOrder, setSortOrder] = useState("newest");
   const [filterLanguage, setFilterLanguage] = useState("all");
   const [showClearConfirm, setShowClearConfirm] = useState(false);
+  
+  // Edit note state
+  const [editingNoteId, setEditingNoteId] = useState(null);
+  const [editNoteValue, setEditNoteValue] = useState("");
 
   // Get unique languages from bookmarks
   const languages = useMemo(() => {
@@ -34,7 +38,7 @@ function Bookmarks() {
         bookmark.name.toLowerCase().includes(query) ||
         bookmark.owner.toLowerCase().includes(query) ||
         (bookmark.description && bookmark.description.toLowerCase().includes(query)) ||
-        (bookmark.note && bookmark.note.toLowerCase().includes(query)) // Search in notes too
+        (bookmark.note && bookmark.note.toLowerCase().includes(query))
       );
     }
 
@@ -77,9 +81,32 @@ function Bookmarks() {
     setShowClearConfirm(false);
   };
 
+  // Note editing functions
+  const startEditingNote = (e, bookmark) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setEditingNoteId(bookmark._id);
+    setEditNoteValue(bookmark.note || "");
+  };
+
+  const saveNote = async (e, bookmarkId) => {
+    e.preventDefault();
+    e.stopPropagation();
+    await updateBookmark(bookmarkId, { note: editNoteValue.trim() });
+    setEditingNoteId(null);
+    setEditNoteValue("");
+  };
+
+  const cancelEditNote = (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setEditingNoteId(null);
+    setEditNoteValue("");
+  };
+
   return (
-    <div className="min-h-screen py-8 px-4">
-      <div className="max-w-6xl mx-auto">
+    <div className="min-h-screen max-w-6xl mt-7">
+      <div className="max-w-full mx-auto">
         {/* Header */}
         <div className="bg-white shadow-xl rounded-3xl p-8 mb-8 border border-purple-200">
           <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-6">
@@ -258,15 +285,53 @@ function Bookmarks() {
                         {repo.description || "No description available"}
                       </p>
                       
-                      {/* Note Display */}
-                      {repo.note && (
-                        <div className="mb-4 p-3 bg-yellow-50 border border-yellow-200 rounded-lg">
-                          <div className="flex items-start gap-2">
-                            <BiNote className="text-yellow-500 mt-0.5 flex-shrink-0" />
-                            <p className="text-sm text-yellow-800">{repo.note}</p>
+                      {/* Note Display/Edit */}
+                      <div className="mb-4">
+                        {editingNoteId === repo._id ? (
+                          <div className="p-3 bg-yellow-50 border border-yellow-200 rounded-lg" onClick={(e) => e.preventDefault()}>
+                            <textarea
+                              value={editNoteValue}
+                              onChange={(e) => setEditNoteValue(e.target.value)}
+                              className="w-full px-2 py-1 text-sm border border-yellow-300 rounded focus:outline-none focus:ring-2 focus:ring-yellow-400 resize-none"
+                              rows="2"
+                              placeholder="Add your note..."
+                              autoFocus
+                            />
+                            <div className="flex gap-2 mt-2">
+                              <button
+                                onClick={(e) => saveNote(e, repo._id)}
+                                className="flex items-center gap-1 px-3 py-1 bg-green-500 text-white text-xs rounded hover:bg-green-600 transition-colors"
+                              >
+                                <BiCheck className="text-base" />
+                                Save
+                              </button>
+                              <button
+                                onClick={cancelEditNote}
+                                className="flex items-center gap-1 px-3 py-1 bg-gray-400 text-white text-xs rounded hover:bg-gray-500 transition-colors"
+                              >
+                                <BiX className="text-base" />
+                                Cancel
+                              </button>
+                            </div>
                           </div>
-                        </div>
-                      )}
+                        ) : (
+                          <div className="p-3 bg-yellow-50 border border-yellow-200 rounded-lg relative group/note">
+                            <div className="flex items-start gap-2">
+                              <BiNote className="text-yellow-500 mt-0.5 flex-shrink-0" />
+                              <p className="text-sm text-yellow-800 flex-1">
+                                {repo.note || "No note yet. Click edit to add one."}
+                              </p>
+                              <button
+                                onClick={(e) => startEditingNote(e, repo)}
+                                className="opacity-0 group-hover/note:opacity-100 transition-opacity p-1 hover:bg-yellow-200 rounded"
+                                title="Edit note"
+                              >
+                                <BiEdit className="text-yellow-600" />
+                              </button>
+                            </div>
+                          </div>
+                        )}
+                      </div>
                       
                       <div className="flex items-center gap-2 mb-4">
                         {repo.language && (

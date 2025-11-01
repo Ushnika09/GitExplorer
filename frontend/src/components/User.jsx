@@ -36,7 +36,7 @@ function User() {
   }
 
   return (
-    <div className="flex flex-col items-start gap-6 justify-center max-w-6xl mx-auto w-full py-6">
+    <div className="flex flex-col items-start gap-6 justify-center max-w-7xl mx-auto w-full py-6">
       {/* Search Section */}
       <div className="w-full rounded-2xl bg-white shadow-lg px-8 py-8 transition-all duration-300 flex flex-col items-start justify-center border border-purple-100">
         {/* Title */}

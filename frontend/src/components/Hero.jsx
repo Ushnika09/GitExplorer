@@ -8,7 +8,7 @@ function Hero() {
   const { bookmarks } = useContext(BookmarkContext);
 
   return (
-    <div className="mx-3.5 my-5 px-2 py-12 flex justify-center items-center flex-col shadow-2xl border-8 rounded-3xl border-white bg-purple-100">
+    <div className="mx-3.5 my-5 px-2 py-12 flex justify-center items-center flex-col shadow-2xl border-8 rounded-3xl border-white bg-purple-100 max-w-7xl mx-auto">
       <div className="flex gap-3 items shrink-0 py-5">
         {/* logo */}
         <div

@@ -31,11 +31,11 @@ function Trend() {
     if (type === "month") daysAgo = 30;
 
     const target = new Date(now.setDate(now.getDate() - daysAgo));
-    return target.toISOString().split("T")[0]; // YYYY-MM-DD
+    return target.toISOString().split("T")[0];
   }
 
   return (
-    <div className="flex flex-col gap-8 max-w-6xl mx-auto w-full">
+    <div className="flex flex-col gap-8 max-w-7xl mx-auto w-full">
       {/* Trending Filters Section */}
       <div className="flex flex-col items-start gap-6 justify-center rounded-2xl bg-white shadow-lg px-8 py-8 transition-all duration-300 border border-purple-100">
         {/* Header */}

@@ -45,7 +45,7 @@ function Header() {
           <div
             className="py-3.5 px-3.5 flex items-center bg-gradient-to-br from-blue-500 to-purple-600 
             rounded-xl  text-2xl
-            transition-opacity duration-200"
+            transition-opacity duration-200 "
           >
             <FiGithub className="text-white " />
           </div>
@@ -130,9 +130,9 @@ function Header() {
             onClick={() => setOpen(false)}
           />
           {/* left */}
-          <div className="flex gap-3 items-center my-5">
+          <div className="flex gap-3 items-center my-5 ">
             <div className=" flex items-center  shrink-0">
-              <FiGithub className="text-white text-4xl shrink-0  bg-blue-700 rounded-full p-2" />
+              <FiGithub className="text-white text-4xl shrink-0  bg-blue-700 rounded-full p-2 " />
             </div>
             <div>
               <h1 className="text-xl font-bold ">GitExplorer</h1>

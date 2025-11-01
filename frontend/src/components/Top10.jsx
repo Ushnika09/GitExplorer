@@ -15,226 +15,278 @@ function Top10() {
   const { bookmarks = [], addBookmark, removeBookmark } = useContext(BookmarkContext);
 
   const [selectedRepo, setSelectedRepo] = useState(null);
-  const [notes, setNotes] = useState("");
+  const [note, setNote] = useState("");
   const [showModal, setShowModal] = useState(false);
+  const [isAddingBookmark, setIsAddingBookmark] = useState(false);
 
   const top = data?.items?.slice(0, 10) || [];
 
-  // helper to check bookmark by repoId (consistent with RepoCard)
+  // Check if repo is bookmarked by repoId
   const isRepoBookmarked = (repo) => {
     return bookmarks.some((b) => b.repoId === repo.id);
   };
 
-  // Handle bookmark click (remove if exists, else open modal)
+  // Handle bookmark click
   async function handleBookmarkClick(repo) {
     const existing = bookmarks.find((b) => b.repoId === repo.id);
     if (existing) {
       try {
-        await removeBookmark(existing._id); // remove by mongo _id
+        await removeBookmark(existing._id);
       } catch (err) {
         console.error("Failed to remove bookmark", err);
       }
     } else {
       setSelectedRepo(repo);
-      setNotes("");
+      setNote("");
       setShowModal(true);
     }
   }
 
-  // Add bookmark (uses provider addBookmark)
+  // Add bookmark with duplicate prevention
   async function handleAddBookmark() {
-    if (!selectedRepo) return;
+    if (!selectedRepo || isAddingBookmark) return;
+
+    setIsAddingBookmark(true);
+
     const bookmarkData = {
-      repoId: selectedRepo.id, // consistent field
+      repoId: selectedRepo.id,
       name: selectedRepo.name,
       owner: selectedRepo.owner.login,
       url: selectedRepo.html_url,
+      description: selectedRepo.description || "",
       language: selectedRepo.language || "Unknown",
       stargazers_count: selectedRepo.stargazers_count || 0,
       forks_count: selectedRepo.forks_count || 0,
       watchers_count: selectedRepo.watchers_count ?? selectedRepo.watchers ?? 0,
       created_at: selectedRepo.created_at,
+      updated_at: selectedRepo.updated_at,
       avatar: selectedRepo.owner.avatar_url,
-      note: notes.trim(),
+      note: note.trim(),
       bookmarkedAt: new Date().toISOString(),
     };
 
-    try {
-      await addBookmark(bookmarkData);
+    const result = await addBookmark(bookmarkData);
+    
+    setIsAddingBookmark(false);
+
+    if (result.success) {
       setShowModal(false);
       setSelectedRepo(null);
-      setNotes("");
-    } catch (err) {
-      console.error("Failed to add bookmark", err);
+      setNote("");
+    } else {
+      alert(result.message || "Failed to add bookmark");
     }
   }
 
   function handleCloseModal() {
     setShowModal(false);
     setSelectedRepo(null);
-    setNotes("");
+    setNote("");
   }
 
   if (loading) {
     return (
-      <div className="flex flex-col items-center justify-center h-64 gap-4">
-        <AiOutlineLoading3Quarters className="animate-spin text-4xl text-purple-500" />
-        <span className="text-purple-500 text-lg font-medium">Loading</span>
+      <div className="flex flex-col items-center justify-center h-64 gap-4 bg-white rounded-2xl shadow-lg border border-purple-100">
+        <AiOutlineLoading3Quarters className="animate-spin text-5xl text-purple-500" />
+        <span className="text-purple-600 text-lg font-semibold">Loading trending repositories...</span>
       </div>
     );
   }
 
   return (
     <>
-      <div className="flex flex-col gap-5 my-10">
-        <h2 className="text-2xl md:text-3xl font-bold text-gray-800 mb-3">
-          Top 10 Trending Repositories
-        </h2>
+      <div className="bg-white shadow-lg rounded-2xl p-6 border border-purple-100">
+        {/* Header */}
+        <div className="mb-6 pb-4 border-b-2 border-purple-100">
+          <h2 className="text-2xl md:text-3xl font-bold bg-gradient-to-r from-purple-600 to-indigo-600 bg-clip-text text-transparent mb-2">
+            🔥 Top 10 Trending Repositories
+          </h2>
+          <p className="text-gray-600">Most starred repositories based on your filters</p>
+        </div>
 
-        {top.map((repo) => {
-          const bookmarked = isRepoBookmarked(repo);
+        {/* Repository Cards */}
+        <div className="space-y-4">
+          {top.map((repo, index) => {
+            const bookmarked = isRepoBookmarked(repo);
 
-          return (
-            <div
-              key={repo.id}
-              className="flex flex-col gap-3 bg-white rounded-xl shadow-md p-5 transition-transform duration-300 hover:scale-105 hover:shadow-xl hover:bg-gradient-to-br from-purple-100 via-purple-50 to-pink-50"
-            >
-              {/* Header */}
-              <div className="flex justify-between items-center">
-                <div className="flex items-center gap-3">
-                  <img
-                    src={repo.owner.avatar_url}
-                    alt={repo.owner.login}
-                    className="rounded-full h-12 w-12"
-                  />
-                  <h1 className="text-sm md:text-lg font-medium">
-                    {repo.owner.login}
-                  </h1>
+            return (
+              <div
+                key={repo.id}
+                className="relative flex flex-col gap-4 p-5 rounded-xl border-2 border-gray-100 
+                         hover:border-purple-300 hover:shadow-lg transition-all duration-300 
+                         bg-gradient-to-br from-white to-purple-50/30 group"
+              >
+                {/* Rank Badge */}
+                <div className="absolute -top-3 -left-3 w-8 h-8 bg-gradient-to-br from-purple-500 to-indigo-500 
+                              rounded-full flex items-center justify-center text-white font-bold text-sm shadow-lg">
+                  {index + 1}
                 </div>
 
-                <div className="flex items-center gap-3 text-gray-600">
-                  {bookmarked ? (
-                    <FaBookmark
-                      className="cursor-pointer text-xl text-purple-600 fill-purple-600 hover:text-purple-500 transition"
-                      onClick={() => handleBookmarkClick(repo)}
-                      title="Remove bookmark"
+                {/* Header */}
+                <div className="flex justify-between items-start gap-3">
+                  <div className="flex items-center gap-3 flex-1 min-w-0">
+                    <img
+                      src={repo.owner.avatar_url}
+                      alt={repo.owner.login}
+                      className="rounded-full h-12 w-12 border-2 border-purple-200 
+                               group-hover:border-purple-400 transition-colors flex-shrink-0"
                     />
-                  ) : (
-                    <BiBookmark
-                      className="cursor-pointer text-xl text-gray-600 hover:text-purple-500 transition"
-                      onClick={() => handleBookmarkClick(repo)}
-                      title="Add bookmark"
-                    />
-                  )}
+                    <div className="min-w-0 flex-1">
+                      <h3 className="text-sm md:text-base font-semibold text-gray-700 truncate">
+                        {repo.owner.login}
+                      </h3>
+                      {repo.language && (
+                        <span className="inline-block mt-1 px-2.5 py-1 bg-purple-100 text-purple-700 
+                                       text-xs font-medium rounded-full">
+                          {repo.language}
+                        </span>
+                      )}
+                    </div>
+                  </div>
 
-                  <a
-                    href={repo.clone_url}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                  >
-                    <GoShare
-                      className="cursor-pointer text-xl hover:text-purple-500"
+                  {/* Action Buttons */}
+                  <div className="flex items-center gap-2 flex-shrink-0">
+                    {bookmarked ? (
+                      <button
+                        onClick={() => handleBookmarkClick(repo)}
+                        className="p-2.5 bg-purple-100 rounded-lg hover:bg-purple-200 transition-colors"
+                        title="Remove bookmark"
+                      >
+                        <FaBookmark className="text-lg text-purple-600" />
+                      </button>
+                    ) : (
+                      <button
+                        onClick={() => handleBookmarkClick(repo)}
+                        className="p-2.5 bg-gray-100 rounded-lg hover:bg-purple-100 transition-colors"
+                        title="Add bookmark"
+                      >
+                        <BiBookmark className="text-lg text-gray-600 hover:text-purple-600" />
+                      </button>
+                    )}
+
+                    <a
+                      href={repo.clone_url}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="p-2.5 bg-gray-100 rounded-lg hover:bg-blue-100 transition-colors"
                       title="Share repository"
-                    />
-                  </a>
+                    >
+                      <GoShare className="text-lg text-gray-600 hover:text-blue-600" />
+                    </a>
+                  </div>
                 </div>
-              </div>
 
-              {/* Repo Info */}
-              <div className="flex flex-col gap-2">
-                <Link
-                  to={`/app/repodetails/${repo.owner.login}/${repo.name}`}
-                  className="text-lg font-semibold truncate hover:text-purple-600 hover:underline transition-colors"
-                >
-                  {repo.name}
-                </Link>
-                <p className="text-gray-700 text-sm line-clamp-2">
-                  {repo.description || "No description available"}
-                </p>
-                {repo.language && (
-                  <span className="w-fit flex bg-purple-100 text-purple-800 text-xs font-medium px-3.5 py-1.5 rounded-full my-1.5">
-                    {repo.language}
-                  </span>
-                )}
-              </div>
+                {/* Repo Info */}
+                <div className="flex flex-col gap-2">
+                  <Link
+                    to={`/app/repodetails/${repo.owner.login}/${repo.name}`}
+                    className="text-lg md:text-xl font-bold text-gray-800 hover:text-purple-600 
+                             hover:underline transition-colors line-clamp-1"
+                  >
+                    {repo.name}
+                  </Link>
+                  <p className="text-gray-600 text-sm line-clamp-2">
+                    {repo.description || "No description available"}
+                  </p>
+                </div>
 
-              {/* Stats */}
-              <div className="flex justify-between items-center mt-3">
-                <div className="flex items-center gap-1.5 text-gray-600" title="Stars">
-                  <BiStar className="text-yellow-500" />
-                  <span className="text-sm">{repo.stargazers_count}</span>
-                </div>
-                <div className="flex items-center gap-1.5 text-gray-600" title="Forks">
-                  <FaCodeFork className="text-gray-500" />
-                  <span className="text-sm">{repo.forks_count}</span>
-                </div>
-                <div className="flex items-center gap-1.5 text-gray-600" title="Watchers">
-                  <IoEyeOutline className="text-blue-500" />
-                  <span className="text-sm">{repo.watchers_count ?? repo.watchers ?? 0}</span>
-                </div>
-                <div className="flex items-center gap-1.5 text-gray-600" title="Created">
-                  <CiCalendar className="text-green-500" />
-                  <span className="text-xs">{moment(repo.created_at).fromNow()}</span>
+                {/* Stats */}
+                <div className="flex flex-wrap items-center gap-3 pt-3 border-t border-gray-200">
+                  <div className="flex items-center gap-1.5 px-3 py-1.5 bg-yellow-50 rounded-lg" title="Stars">
+                    <BiStar className="text-yellow-500 text-lg" />
+                    <span className="text-sm font-semibold text-gray-700">
+                      {repo.stargazers_count?.toLocaleString()}
+                    </span>
+                  </div>
+                  <div className="flex items-center gap-1.5 px-3 py-1.5 bg-gray-100 rounded-lg" title="Forks">
+                    <FaCodeFork className="text-gray-500 text-lg" />
+                    <span className="text-sm font-semibold text-gray-700">
+                      {repo.forks_count?.toLocaleString()}
+                    </span>
+                  </div>
+                  <div className="flex items-center gap-1.5 px-3 py-1.5 bg-blue-50 rounded-lg" title="Watchers">
+                    <IoEyeOutline className="text-blue-500 text-lg" />
+                    <span className="text-sm font-semibold text-gray-700">
+                      {(repo.watchers_count ?? repo.watchers ?? 0).toLocaleString()}
+                    </span>
+                  </div>
+                  <div className="flex items-center gap-1.5 px-3 py-1.5 bg-green-50 rounded-lg ml-auto" title="Created">
+                    <CiCalendar className="text-green-500 text-lg" />
+                    <span className="text-xs font-medium text-gray-600">
+                      {moment(repo.created_at).fromNow()}
+                    </span>
+                  </div>
                 </div>
               </div>
-            </div>
-          );
-        })}
+            );
+          })}
+        </div>
       </div>
 
       {/* Bookmark Modal */}
       {showModal && selectedRepo && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-          <div className="bg-white rounded-2xl p-6 max-w-md w-full shadow-xl">
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4 backdrop-blur-sm">
+          <div className="bg-white rounded-2xl p-6 max-w-md w-full shadow-2xl transform transition-all">
             <div className="flex items-center justify-between mb-4">
               <h3 className="text-xl font-bold text-gray-800">Add to Bookmarks</h3>
               <button
                 onClick={handleCloseModal}
-                className="text-gray-400 hover:text-gray-600 transition-colors"
+                className="text-gray-400 hover:text-gray-600 transition-colors p-1 hover:bg-gray-100 rounded-lg"
+                disabled={isAddingBookmark}
               >
                 <BiX className="text-2xl" />
               </button>
             </div>
 
-            <div className="mb-4 flex items-center gap-3">
+            <div className="mb-4 flex items-center gap-3 p-3 bg-purple-50 rounded-xl">
               <img
                 src={selectedRepo.owner.avatar_url}
                 alt={selectedRepo.owner.login}
-                className="rounded-full h-10 w-10"
+                className="rounded-full h-12 w-12 border-2 border-purple-200"
               />
-              <div>
-                <h4 className="font-semibold text-gray-800">{selectedRepo.name}</h4>
+              <div className="flex-1 min-w-0">
+                <h4 className="font-semibold text-gray-800 truncate">{selectedRepo.name}</h4>
                 <p className="text-sm text-gray-600">by {selectedRepo.owner.login}</p>
               </div>
             </div>
 
             <div className="mb-6">
-              <label htmlFor="notes" className="block text-sm font-medium text-gray-700 mb-2">
-                Add Notes (Optional)
+              <label htmlFor="note" className="block text-sm font-medium text-gray-700 mb-2">
+                Add Note (Optional)
               </label>
               <textarea
-                id="notes"
-                value={notes}
-                onChange={(e) => setNotes(e.target.value)}
-                placeholder="Add your notes about this repository..."
-                className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-purple-500 transition-colors resize-none"
+                id="note"
+                value={note}
+                onChange={(e) => setNote(e.target.value)}
+                placeholder="Add your thoughts about this repository..."
+                className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl 
+                         focus:ring-2 focus:ring-purple-500 focus:border-purple-500 
+                         transition-colors resize-none disabled:opacity-50 disabled:cursor-not-allowed"
                 rows="3"
+                disabled={isAddingBookmark}
               />
             </div>
 
             <div className="flex gap-3 justify-end">
               <button
                 onClick={handleCloseModal}
-                className="px-4 py-2 border border-gray-300 text-gray-700 rounded-xl hover:bg-gray-50 transition-colors"
+                className="px-5 py-2.5 border-2 border-gray-300 text-gray-700 rounded-xl 
+                         hover:bg-gray-50 transition-colors font-medium
+                         disabled:opacity-50 disabled:cursor-not-allowed"
+                disabled={isAddingBookmark}
               >
                 Cancel
               </button>
               <button
                 onClick={handleAddBookmark}
-                className="px-4 py-2 bg-gradient-to-r from-purple-600 to-indigo-600 text-white rounded-xl hover:from-purple-700 hover:to-indigo-700 transition-colors flex items-center gap-2"
+                className="px-5 py-2.5 bg-gradient-to-r from-purple-600 to-indigo-600 text-white 
+                         rounded-xl hover:from-purple-700 hover:to-indigo-700 transition-colors 
+                         flex items-center gap-2 font-medium shadow-lg hover:shadow-xl
+                         disabled:opacity-50 disabled:cursor-not-allowed"
+                disabled={isAddingBookmark}
               >
                 <FaBookmark className="text-lg" />
-                Add to Bookmarks
+                {isAddingBookmark ? "Adding..." : "Add to Bookmarks"}
               </button>
             </div>
           </div>

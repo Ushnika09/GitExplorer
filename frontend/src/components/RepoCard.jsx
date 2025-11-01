@@ -14,11 +14,12 @@ export default function RepoCard({ data }) {
   const [selectedRepo, setSelectedRepo] = useState(null);
   const [note, setNote] = useState("");
   const [showModal, setShowModal] = useState(false);
+  const [isAddingBookmark, setIsAddingBookmark] = useState(false);
 
   // ✅ Unified bookmark check (Mongo _id + repoId inside doc)
   function isRepoBookmarked(repo) {
     return bookmarks.some(
-      (b) => b.repoId === repo.id // always store repoId in DB
+      (b) => b.repoId === repo.id // always check by repoId
     );
   }
 
@@ -34,24 +35,37 @@ export default function RepoCard({ data }) {
   }
 
   async function handleAddBookmark() {
-    if (!selectedRepo) return;
-    await addBookmark({
+    if (!selectedRepo || isAddingBookmark) return;
+    
+    setIsAddingBookmark(true);
+    
+    const result = await addBookmark({
       repoId: selectedRepo.id, // ✅ consistent field name
       name: selectedRepo.name,
       owner: selectedRepo.owner.login,
       url: selectedRepo.html_url,
+      description: selectedRepo.description || "",
       language: selectedRepo.language || "Unknown",
       stargazers_count: selectedRepo.stargazers_count || 0,
       forks_count: selectedRepo.forks_count || 0,
-      watchers_count: selectedRepo.watchers_count || 0, // ✅ use watchers_count
+      watchers_count: selectedRepo.watchers_count || 0,
       created_at: selectedRepo.created_at,
+      updated_at: selectedRepo.updated_at,
       avatar: selectedRepo.owner.avatar_url,
       note: note.trim(),
       bookmarkedAt: new Date().toISOString(),
     });
-    setShowModal(false);
-    setSelectedRepo(null);
-    setNote("");
+    
+    setIsAddingBookmark(false);
+    
+    if (result.success) {
+      setShowModal(false);
+      setSelectedRepo(null);
+      setNote("");
+    } else {
+      // Show error message to user
+      alert(result.message || "Failed to add bookmark");
+    }
   }
 
   function handleCloseModal() {
@@ -158,6 +172,7 @@ export default function RepoCard({ data }) {
               <button
                 onClick={handleCloseModal}
                 className="text-gray-400 hover:text-gray-600 transition-colors"
+                disabled={isAddingBookmark}
               >
                 <BiX className="text-2xl" />
               </button>
@@ -186,22 +201,25 @@ export default function RepoCard({ data }) {
                 placeholder="Add your note about this repository..."
                 className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-purple-500 transition-colors resize-none"
                 rows="3"
+                disabled={isAddingBookmark}
               />
             </div>
 
             <div className="flex gap-3 justify-end">
               <button
                 onClick={handleCloseModal}
-                className="px-4 py-2 border border-gray-300 text-gray-700 rounded-xl hover:bg-gray-50 transition-colors"
+                className="px-4 py-2 border border-gray-300 text-gray-700 rounded-xl hover:bg-gray-50 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                disabled={isAddingBookmark}
               >
                 Cancel
               </button>
               <button
                 onClick={handleAddBookmark}
-                className="px-4 py-2 bg-gradient-to-r from-purple-600 to-indigo-600 text-white rounded-xl hover:from-purple-700 hover:to-indigo-700 transition-colors flex items-center gap-2"
+                className="px-4 py-2 bg-gradient-to-r from-purple-600 to-indigo-600 text-white rounded-xl hover:from-purple-700 hover:to-indigo-700 transition-colors flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
+                disabled={isAddingBookmark}
               >
                 <FaBookmark className="text-lg" />
-                Add to Bookmarks
+                {isAddingBookmark ? "Adding..." : "Add to Bookmarks"}
               </button>
             </div>
           </div>

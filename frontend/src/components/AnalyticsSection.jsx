@@ -1,55 +1,64 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import RepoAnalytics from "./RepoAnalytics";
 import BookmarkAnalytics from "./BookmarkAnalytics";
-import Languageanaysis from "./Languageanaysis";
+import Languageanalysis from "./Languageanaysis";
 import Top10 from "./Top10";
 import LanguageDistribution from "./LanguageDistribution";
 import RecentBookmarks from "./RecentBookmarks";
+import { BiGitRepoForked, BiBookmark } from "react-icons/bi";
 
 function AnalyticsSection() {
   const [active, setActive] = useState("repo");
 
-
-  
-
   return (
-    <div className="flex flex-col justify-center my-12 mb-22 gap-5">
-        <div className="flex  gap-4 items-center ">
-      <button
-        className={`flex gap-1 text-sm md:text-xl font-medium md:font-bold py-1.5 px-5 md:px-10 rounded-2xl justify-center items-center repo ${
-          active == "repo"
-            ? "bg-purple-500 text-white hover:bg-purple-500/70"
-            : "bg-purple-200/60 hover:bg-purple-200"
-        }`}
-        onClick={() => setActive("repo")}
-      >
-        <span className="text-nowrap">Repository Analytics</span>
-      </button>
+    <div className="flex flex-col gap-6">
+      {/* Modern Tab Switcher */}
+      <div className="bg-white shadow-lg rounded-2xl p-2 border border-purple-100 inline-flex gap-2 w-fit">
+        <button
+          className={`flex items-center gap-2 px-6 py-3 rounded-xl font-semibold text-sm md:text-base
+                     transition-all duration-300 transform hover:scale-105
+                     ${active === "repo"
+                       ? "bg-gradient-to-r from-purple-500 to-indigo-500 text-white shadow-lg"
+                       : "bg-transparent text-gray-600 hover:bg-purple-50"
+                     }`}
+          onClick={() => setActive("repo")}
+        >
+          <BiGitRepoForked className="text-xl" />
+          <span className="hidden sm:inline">Repository Analytics</span>
+          <span className="sm:hidden">Repos</span>
+        </button>
 
-      <button
-        className={`flex gap-1 text-sm md:text-xl font-medium md:font-bold py-1.5 px-5 md:px-10 rounded-2xl justify-center items-center bookmarks ${
-          active == "bookmarks"
-            ? "bg-purple-500 text-white hover:bg-purple-500/70"
-            : "bg-purple-200/60 hover:bg-purple-200"
-        }`}
-        onClick={() => setActive("bookmarks")}
-      >
-        <span className="text-nowrap">Bookmark Analytics</span>
-      </button>
-    </div>
-    {
-        (active=="repo" ? (<>
-        <RepoAnalytics/>
-          <Languageanaysis/>
-          <Top10/>
-        </>
-        )
-         : <>
-         <BookmarkAnalytics/>
-         <LanguageDistribution/>
-         <RecentBookmarks/>
-         </>)
-    }
+        <button
+          className={`flex items-center gap-2 px-6 py-3 rounded-xl font-semibold text-sm md:text-base
+                     transition-all duration-300 transform hover:scale-105
+                     ${active === "bookmarks"
+                       ? "bg-gradient-to-r from-purple-500 to-indigo-500 text-white shadow-lg"
+                       : "bg-transparent text-gray-600 hover:bg-purple-50"
+                     }`}
+          onClick={() => setActive("bookmarks")}
+        >
+          <BiBookmark className="text-xl" />
+          <span className="hidden sm:inline">Bookmark Analytics</span>
+          <span className="sm:hidden">Bookmarks</span>
+        </button>
+      </div>
+
+      {/* Content */}
+      <div className="space-y-6">
+        {active === "repo" ? (
+          <>
+            <RepoAnalytics/>
+            <Languageanalysis/>
+            <Top10/>
+          </>
+        ) : (
+          <>
+            <BookmarkAnalytics/>
+            <LanguageDistribution/>
+            <RecentBookmarks/>
+          </>
+        )}
+      </div>
     </div>
   );
 }

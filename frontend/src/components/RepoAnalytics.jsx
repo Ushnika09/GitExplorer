@@ -10,116 +10,107 @@ import { AiOutlineLoading3Quarters } from "react-icons/ai";
 
 function RepoAnalytics() {
   const { data } = useData();
-  const { totalStars, totalForks, totalIssues, mostUsedLanguage, loading } =
-    useFetchAllRepos();
+  const { totalStars, totalForks, totalIssues, mostUsedLanguage, loading } = useFetchAllRepos();
+
+  const cards = [
+    {
+      title: "Total Repositories",
+      value: data?.total_count?.toLocaleString() || "0",
+      subtitle: `Most: ${mostUsedLanguage}`,
+      icon: MdAutoGraph,
+      gradient: "from-purple-500 to-indigo-500",
+      bgGradient: "from-purple-50 to-indigo-50",
+      info: "Total matching repositories found"
+    },
+    {
+      title: "Total Stars",
+      value: totalStars.toLocaleString(),
+      subtitle: `Avg ${Math.ceil(totalStars / 1000)} per repo`,
+      icon: FaRegStar,
+      gradient: "from-yellow-500 to-orange-500",
+      bgGradient: "from-yellow-50 to-orange-50",
+      info: "Based on sample of 1000 repos"
+    },
+    {
+      title: "Total Forks",
+      value: totalForks.toLocaleString(),
+      subtitle: `Avg ${Math.ceil(totalForks / 1000)} per repo`,
+      icon: FaCodeFork,
+      gradient: "from-green-500 to-emerald-500",
+      bgGradient: "from-green-50 to-emerald-50",
+      info: "Based on sample of 1000 repos"
+    },
+    {
+      title: "Open Issues",
+      value: totalIssues.toLocaleString(),
+      subtitle: "Active development",
+      icon: MdOutlineReportProblem,
+      gradient: "from-red-500 to-pink-500",
+      bgGradient: "from-red-50 to-pink-50",
+      info: "Based on sample of 1000 repos"
+    }
+  ];
+
+  if (loading) {
+    return (
+      <div className="flex flex-col items-center justify-center h-64 gap-4 bg-white rounded-2xl shadow-lg border border-purple-100">
+        <AiOutlineLoading3Quarters className="animate-spin text-5xl text-purple-500" />
+        <h1 className="text-xl text-purple-600 font-semibold">Loading analytics...</h1>
+      </div>
+    );
+  }
 
   return (
-    <>
-      {loading ? (
-        <div className=" flex items-center h-[10rem] gap-3.5 justify-center my-7 rounded-xl bg-white shadow px-5 py-5 transition-all duration-300  ">
-          <AiOutlineLoading3Quarters className="animate-spin text-3xl text-purple-500" />
-          <h1 className="text-3xl text-purple-500">Loading</h1>
-        </div>
-      ) : (
-        <div className="grid-cols-1 grid items-center md:grid-cols-2 lg:grid-cols-4 justify-between py-5 gap-10 flex-wrap ">
-          <div className="flex flex-col gap-1.5 shadow rounded-2xl flex-1 bg-white px-7.5 py-5.5">
-            <div className="flex items-center gap-15 justify-between">
-              <h1 className="font-medium text-nowrap">Total Repositories</h1>
-              <MdAutoGraph />
+    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+      {cards.map((card, idx) => {
+        const Icon = card.icon;
+        return (
+          <div
+            key={idx}
+            className={`relative overflow-hidden rounded-2xl bg-gradient-to-br ${card.bgGradient} 
+                       border border-purple-100 shadow-lg hover:shadow-xl 
+                       transition-all duration-300 hover:scale-105 group`}
+          >
+            <div className="p-6">
+              {/* Header with info */}
+              <div className="flex items-start justify-between mb-4">
+                <div className="flex-1">
+                  <h3 className="font-semibold text-gray-700 mb-1">{card.title}</h3>
+                  
+                  {/* Info Tooltip */}
+                  <div className="relative group/info inline-block">
+                    <FaCircleInfo className="text-xs text-gray-400 hover:text-gray-600 cursor-help" />
+                    <div className="absolute left-0 top-full mt-1 w-40 p-2 bg-gray-800 text-white text-xs 
+                                  rounded-lg opacity-0 invisible group-hover/info:opacity-100 
+                                  group-hover/info:visible transition-all duration-200 z-10 shadow-xl">
+                      {card.info}
+                    </div>
+                  </div>
+                </div>
+
+                {/* Icon */}
+                <div className={`p-3 rounded-xl bg-gradient-to-br ${card.gradient} 
+                               shadow-lg transform group-hover:rotate-12 transition-transform duration-300`}>
+                  <Icon className="text-xl text-white" />
+                </div>
+              </div>
+
+              {/* Value */}
+              <h2 className="text-3xl md:text-4xl font-bold text-gray-800 mb-2">
+                {card.value}
+              </h2>
+
+              {/* Subtitle */}
+              <p className="text-sm text-gray-600 truncate">{card.subtitle}</p>
             </div>
-            <h1 className="text-4xl font-bold">
-              {data.total_count ? data.total_count : 0}
-            </h1>
-            <h1 className="text-gray-600/90 text-sm text-nowrap">
-              Most:{mostUsedLanguage}
-            </h1>
+
+            {/* Decorative element */}
+            <div className={`absolute -bottom-6 -right-6 w-24 h-24 bg-gradient-to-br ${card.gradient} 
+                           opacity-10 rounded-full blur-2xl`}></div>
           </div>
-
-          <div className="flex flex-col gap-1.5 shadow rounded-2xl flex-1 bg-white px-7.5 py-5.5">
-            <div className="flex items-center gap-7 justify-between">
-              <div className="flex items-center gap-3.5">
-                <h1 className="font-medium text-nowrap">Total Stars</h1>
-                <FaRegStar />
-              </div>
-
-              {/* Info Icon with Tooltip */}
-              <div className="relative group">
-                <FaCircleInfo className="cursor-pointer text-gray-600 hover:text-gray-800" />
-
-                {/* Tooltip */}
-                <span
-                  className="absolute left-1/2 -translate-x-1/2 top-full mt-2
-                         whitespace-nowrap text-xs bg-gray-800 text-white 
-                         px-2 py-1 rounded opacity-0 group-hover:opacity-100
-                         transition-opacity duration-200"
-                >
-                  Based on sample of 1000 repos
-                </span>
-              </div>
-            </div>
-
-            <h1 className="text-4xl font-bold">{totalStars}</h1>
-            <h1 className="text-gray-600/90 text-sm text-nowrap">
-              Avg {Math.ceil(totalStars / 1000)} per repo
-            </h1>
-          </div>
-
-          <div className="flex flex-col gap-1.5 shadow rounded-2xl flex-1 bg-white px-7.5 py-5.5">
-            <div className="flex items-center gap-15 justify-between">
-              <div className="flex items-center gap-3.5">
-                <h1 className="font-medium text-nowrap">Total Forks</h1>
-                <FaCodeFork />
-              </div>
-              {/* Info Icon with Tooltip */}
-              <div className="relative group">
-                <FaCircleInfo className="cursor-pointer text-gray-600 hover:text-gray-800" />
-
-                {/* Tooltip */}
-                <span
-                  className="absolute left-1/2 -translate-x-1/2 top-full mt-2
-                         whitespace-nowrap text-xs bg-gray-800 text-white 
-                         px-2 py-1 rounded opacity-0 group-hover:opacity-100
-                         transition-opacity duration-200"
-                >
-                  Based on sample of 1000 repos
-                </span>
-              </div>
-            </div>
-            <h1 className="text-4xl font-bold">{totalForks}</h1>
-            <h1 className="text-gray-600/90 text-sm text-nowrap">
-              Avg {Math.ceil(totalForks / 1000)} per repo
-            </h1>
-          </div>
-
-          <div className="flex flex-col gap-1.5 shadow rounded-2xl flex-1 bg-white px-7.5 py-5.5">
-            <div className="flex items-center gap-7 justify-between">
-              <div className="flex items-center gap-3.5">
-                <h1 className="font-medium text-nowrap">Open Issues</h1>
-                <MdOutlineReportProblem />
-              </div>
-              {/* Info Icon with Tooltip */}
-              <div className="relative group">
-                <FaCircleInfo className="cursor-pointer text-gray-600 hover:text-gray-800" />
-
-                {/* Tooltip */}
-                <span
-                  className="absolute left-1/2 -translate-x-1/2 top-full mt-2
-                         whitespace-nowrap text-xs bg-gray-800 text-white 
-                         px-2 py-1 rounded opacity-0 group-hover:opacity-100
-                         transition-opacity duration-200"
-                >
-                  Based on sample of 1000 repos
-                </span>
-              </div>
-            </div>
-            <h1 className="text-4xl font-bold">{totalIssues}</h1>
-            <h1 className="text-gray-600/90 text-sm text-nowrap">
-              Active development
-            </h1>
-          </div>
-        </div>
-      )}
-    </>
+        );
+      })}
+    </div>
   );
 }
 

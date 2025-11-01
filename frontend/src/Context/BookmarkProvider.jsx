@@ -1,4 +1,3 @@
-// BookmarkProvider.jsx
 import React, { createContext, useState, useEffect } from "react";
 import axios from "axios";
 
@@ -22,45 +21,74 @@ export function BookmarkProvider({ children }) {
 
   const addBookmark = async (repo) => {
     const token = localStorage.getItem("jwt");
-    const res = await axios.post(
-      "http://localhost:5000/api/bookmarks",
-      repo,
-      {
-        headers: { Authorization: `Bearer ${token}` },
+    try {
+      const res = await axios.post(
+        "http://localhost:5000/api/bookmarks",
+        repo,
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      );
+      setBookmarks((prev) => [...prev, res.data]);
+      return { success: true, data: res.data };
+    } catch (err) {
+      // Handle duplicate bookmark error
+      if (err.response?.status === 400) {
+        console.log("Bookmark already exists");
+        return { success: false, message: "Bookmark already exists" };
       }
-    );
-    setBookmarks((prev) => [...prev, res.data]);
+      console.error("Error adding bookmark:", err);
+      return { success: false, message: "Error adding bookmark" };
+    }
   };
 
   const removeBookmark = async (id) => {
     const token = localStorage.getItem("jwt");
-    await axios.delete(`http://localhost:5000/api/bookmarks/${id}`, {
-      headers: { Authorization: `Bearer ${token}` },
-    });
-    setBookmarks((prev) => prev.filter((b) => b._id !== id));
+    try {
+      await axios.delete(`http://localhost:5000/api/bookmarks/${id}`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      setBookmarks((prev) => prev.filter((b) => b._id !== id));
+      return { success: true };
+    } catch (err) {
+      console.error("Error removing bookmark:", err);
+      return { success: false };
+    }
   };
 
   const clearAllBookmarks = async () => {
     const token = localStorage.getItem("jwt");
-    await axios.delete("http://localhost:5000/api/bookmarks", {
-      headers: { Authorization: `Bearer ${token}` },
-    });
-    setBookmarks([]);
+    try {
+      await axios.delete("http://localhost:5000/api/bookmarks", {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      setBookmarks([]);
+      return { success: true };
+    } catch (err) {
+      console.error("Error clearing bookmarks:", err);
+      return { success: false };
+    }
   };
 
-  // ✅ extra: updateBookmark (used only by RecentBookmarks)
+  // Update bookmark (for notes and other fields)
   const updateBookmark = async (id, updates) => {
     const token = localStorage.getItem("jwt");
-    const res = await axios.patch(
-      `http://localhost:5000/api/bookmarks/${id}`,
-      updates,
-      {
-        headers: { Authorization: `Bearer ${token}` },
-      }
-    );
-    setBookmarks((prev) =>
-      prev.map((b) => (b._id === id ? res.data : b))
-    );
+    try {
+      const res = await axios.patch(
+        `http://localhost:5000/api/bookmarks/${id}`,
+        updates,
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      );
+      setBookmarks((prev) =>
+        prev.map((b) => (b._id === id ? res.data : b))
+      );
+      return { success: true, data: res.data };
+    } catch (err) {
+      console.error("Error updating bookmark:", err);
+      return { success: false };
+    }
   };
 
   return (
@@ -70,7 +98,7 @@ export function BookmarkProvider({ children }) {
         addBookmark,
         removeBookmark,
         clearAllBookmarks,
-        updateBookmark, // safe to expose, not required by RepoCard/Top10
+        updateBookmark, 
       }}
     >
       {children}
