@@ -6,33 +6,34 @@ export const BookmarkContext = createContext();
 export function BookmarkProvider({ children }) {
   const [bookmarks, setBookmarks] = useState([]);
 
+  // Automatically switch between local and hosted backend
+  const BASE_URL =
+    import.meta.env.MODE === "development"
+      ? "http://localhost:5000/api"
+      : "https://gitexplorer-backend-k5h7.onrender.com/api";
+
   // Load bookmarks on mount
   useEffect(() => {
     const token = localStorage.getItem("jwt");
     if (token) {
       axios
-        .get("http://localhost:5000/api/bookmarks", {
+        .get(`${BASE_URL}/bookmarks`, {
           headers: { Authorization: `Bearer ${token}` },
         })
         .then((res) => setBookmarks(res.data))
         .catch((err) => console.error(err));
     }
-  }, []);
+  }, [BASE_URL]);
 
   const addBookmark = async (repo) => {
     const token = localStorage.getItem("jwt");
     try {
-      const res = await axios.post(
-        "http://localhost:5000/api/bookmarks",
-        repo,
-        {
-          headers: { Authorization: `Bearer ${token}` },
-        }
-      );
+      const res = await axios.post(`${BASE_URL}/bookmarks`, repo, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
       setBookmarks((prev) => [...prev, res.data]);
       return { success: true, data: res.data };
     } catch (err) {
-      // Handle duplicate bookmark error
       if (err.response?.status === 400) {
         console.log("Bookmark already exists");
         return { success: false, message: "Bookmark already exists" };
@@ -45,7 +46,7 @@ export function BookmarkProvider({ children }) {
   const removeBookmark = async (id) => {
     const token = localStorage.getItem("jwt");
     try {
-      await axios.delete(`http://localhost:5000/api/bookmarks/${id}`, {
+      await axios.delete(`${BASE_URL}/bookmarks/${id}`, {
         headers: { Authorization: `Bearer ${token}` },
       });
       setBookmarks((prev) => prev.filter((b) => b._id !== id));
@@ -59,7 +60,7 @@ export function BookmarkProvider({ children }) {
   const clearAllBookmarks = async () => {
     const token = localStorage.getItem("jwt");
     try {
-      await axios.delete("http://localhost:5000/api/bookmarks", {
+      await axios.delete(`${BASE_URL}/bookmarks`, {
         headers: { Authorization: `Bearer ${token}` },
       });
       setBookmarks([]);
@@ -70,17 +71,12 @@ export function BookmarkProvider({ children }) {
     }
   };
 
-  // Update bookmark (for notes and other fields)
   const updateBookmark = async (id, updates) => {
     const token = localStorage.getItem("jwt");
     try {
-      const res = await axios.patch(
-        `http://localhost:5000/api/bookmarks/${id}`,
-        updates,
-        {
-          headers: { Authorization: `Bearer ${token}` },
-        }
-      );
+      const res = await axios.patch(`${BASE_URL}/bookmarks/${id}`, updates, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
       setBookmarks((prev) =>
         prev.map((b) => (b._id === id ? res.data : b))
       );
@@ -98,7 +94,7 @@ export function BookmarkProvider({ children }) {
         addBookmark,
         removeBookmark,
         clearAllBookmarks,
-        updateBookmark, 
+        updateBookmark,
       }}
     >
       {children}

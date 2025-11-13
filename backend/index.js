@@ -14,7 +14,7 @@ app.get("/test",AuthMiddlewear,(req,res)=>{
     res.status(200).send("Welcome")
 })
 
-app.use(express.json())
+app.use(express.json())//for parsing req body
 app.use("/api",router)
 app.use("/api/bookmarks", BookmarkRoutes);
 

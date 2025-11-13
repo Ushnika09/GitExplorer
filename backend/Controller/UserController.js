@@ -2,6 +2,8 @@ import jwt from "jsonwebtoken";
 import UserModel from "../Models/UserModel.js";
 import bcrypt from "bcrypt"
 
+
+// register controller
 export const register = async (req, res) => {
   try {
     const { name, email, password } = req.body;
@@ -30,6 +32,9 @@ export const register = async (req, res) => {
   }
 };
 
+
+
+//login controller
 export const login= async (req,res) =>{
     try{
         const {email,password}=req.body
@@ -44,10 +49,7 @@ export const login= async (req,res) =>{
         if(!isMatch){
             return res.status(400).json({message:"Invalid credentials"})
         }
-        const token=jwt.sign({id:existing._id},
-            "Secret123",
-            {expiresIn:"1h"}
-        )
+        const token=jwt.sign({id:existing._id},"Secret123",{expiresIn:"1h"})
 
         res.status(200).json({message:"Successfully logged in",
             token,

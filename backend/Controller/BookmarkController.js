@@ -1,6 +1,7 @@
 import BookmarkModel from "../Models/BookMarkmodel.js";
 
-// 📌 Get all bookmarks
+
+//  Get all bookmarks
 export const getBookmarks = async (req, res) => {
   try {
     const bookmarks = await BookmarkModel.find({ userId: req.user.id });
@@ -9,6 +10,7 @@ export const getBookmarks = async (req, res) => {
     res.status(500).json({ message: "Error fetching bookmarks" });
   }
 };
+
 
 //  Add a bookmark
 export const addBookmark = async (req, res) => {
@@ -37,7 +39,8 @@ export const addBookmark = async (req, res) => {
   }
 };
 
-// 📌 Remove one bookmark
+
+//  Remove one bookmark
 export const deleteBookmark = async (req, res) => {
   try {
     await BookmarkModel.findOneAndDelete({
@@ -50,7 +53,8 @@ export const deleteBookmark = async (req, res) => {
   }
 };
 
-// 📌 Clear all bookmarks
+
+//  Clear all bookmarks
 export const clearBookmarks = async (req, res) => {
   try {
     await BookmarkModel.deleteMany({ userId: req.user.id });
@@ -60,29 +64,8 @@ export const clearBookmarks = async (req, res) => {
   }
 };
 
-// Update bookmark (note or other fields)
-export const updateBookmark = async (req, res) => {
-  try {
-    const { id } = req.params;
-    const updates = req.body;
-    
-    const updated = await BookmarkModel.findOneAndUpdate(
-      { _id: id, userId: req.user.id },
-      updates,
-      { new: true }
-    );
-    
-    if (!updated) {
-      return res.status(404).json({ message: "Bookmark not found" });
-    }
-    
-    res.json(updated);
-  } catch (err) {
-    res.status(500).json({ message: "Error updating bookmark" });
-  }
-};
 
-// Legacy updateBookmarkNote endpoint (kept for backward compatibility)
+// updateBookmarkNote endpoint 
 export const updateBookmarkNote = async (req, res) => {
   try {
     const { id } = req.params;

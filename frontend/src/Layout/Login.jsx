@@ -14,6 +14,13 @@ function Login() {
   const [isSubmitted, setIsSubmitted] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
 
+  // Backend url
+  const BASE_URL =
+    import.meta.env.MODE === "development"
+      ? "http://localhost:5000/api"
+      : "https://gitexplorer-backend-k5h7.onrender.com/api";
+  
+
   const handleInputChange = (e) => {
     const { name, value, type, checked } = e.target;
     setFormData(prev => ({
@@ -28,7 +35,7 @@ function Login() {
 
     try {
       // POST request to backend login route
-      const res = await axios.post("http://localhost:5000/api/login", {
+      const res = await axios.post(`${BASE_URL}/login`, {
         email: formData.email,
         password: formData.password,
       });
