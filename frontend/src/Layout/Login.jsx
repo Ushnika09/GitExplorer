@@ -44,12 +44,6 @@ function Login() {
 
       setIsSubmitted(true); // Show success screen
       setIsLoading(false);
-
-      // Redirect after a delay (optional)
-      setTimeout(() => {
-        window.location.href = "/app/home"; // dashboard route
-      }, 1500);
-
     } catch (err) {
       setIsLoading(false);
       console.error(err);
@@ -75,11 +69,11 @@ function Login() {
               <FiCheck className="text-3xl text-green-600" />
             </div>
             <h3 className="text-xl font-semibold text-gray-800 mb-2">Login Successful!</h3>
-            <p className="text-gray-600 mb-6">You're being redirected to your dashboard</p>
+
             <div className="mt-8">
               <div className="inline-flex rounded-md shadow">
                 <Link
-                  to="/explore"
+                  to="/app/home"
                   className="inline-flex items-center gap-2 px-5 py-3 border border-transparent text-base font-medium rounded-xl text-white bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700"
                 >
                   Continue to Dashboard
